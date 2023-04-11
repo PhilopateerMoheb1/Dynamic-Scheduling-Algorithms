@@ -1,11 +1,11 @@
 public class Operation {
     // ================= attributes ==========================
-    int priority; // priority of
-    int timeLeft;
-    int responseTime;
-    final int id;
-    final int arrivalTime;
-    final int exeTime;
+    private int priority;
+    private int timeLeft;
+    private int responseTime;
+    private final int id;
+    private final int arrivalTime;
+    private final int exeTime;
 
     public Operation(int id, int arrivalTime, int exeTime){
         this(id, arrivalTime, exeTime,5);
