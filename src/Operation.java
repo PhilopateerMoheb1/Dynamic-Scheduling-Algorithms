@@ -57,4 +57,10 @@ public class Operation {
     public int getWaiting() {
         return getTATime() - exeTime;
     }
+
+    // addition method
+    @Override
+    public String toString(){
+        return "id: " + this.id +", arrival: " + this.arrivalTime + ", exeTime: " + this.exeTime;
+    }
 }
