@@ -14,6 +14,7 @@ public class OperationTest {
 
         } catch (IllegalArgumentException e) {
             System.out.println("Passed");
+            return;
         }
         fail("Program doesn't throw illgal argument excption");
     }
@@ -26,6 +27,7 @@ public class OperationTest {
 
         } catch (IllegalArgumentException e) {
             System.out.println("Passed");
+            return;
         }
         fail("Program doesn't throw illegal argument excption");
     }
@@ -53,6 +55,7 @@ public class OperationTest {
 
         } catch (IllegalArgumentException e) {
             System.out.println("Passed");
+            return;
         }
         fail("Program doesn't throw illegal argument excption");
     }

@@ -28,26 +28,40 @@ public class PreemptiveSJFQ extends SJFQ {
     }
 
     public static void main(String[] args) {
-        PreemptiveSJFQ q = new PreemptiveSJFQ();
-        Operation o1 = new Operation(1,4,5);
-        Operation o2 = new Operation(2,25,7);
-        Operation o3 = new Operation(3,4,7);
-        Operation o4 = new Operation(4,0,10);
-        q.enqueue(o1);
-        q.enqueue(o2);
-        q.enqueue(o3);
-        q.enqueue(o4);
-        while(!q.isEmpty()){
-            if (q.getTimer() == 4)
-                q.enqueue(new Operation(5,4,2));
-            System.out.println("at time: " + q.getTimer() + ", process in exe: " + q.consumeTimeUnit() );
-        }
+//        PreemptiveSJFQ q = new PreemptiveSJFQ();
+//        Operation o1 = new Operation(1,4,5);
+//        Operation o2 = new Operation(2,25,7);
+//        Operation o3 = new Operation(3,4,7);
+//        Operation o4 = new Operation(4,0,10);
+//        q.enqueue(o1);
+//        q.enqueue(o2);
+//        q.enqueue(o3);
+//        q.enqueue(o4);
+//        while(!q.isEmpty()){
+//            if (q.getTimer() == 4)
+//                q.enqueue(new Operation(5,4,2));
+//            System.out.println("at time: " + q.getTimer() + ", process in exe: " + q.consumeTimeUnit() );
+//        }
+//
+//        Iterator i = q.iterate();
+//        Operation o;
+//        while (i.hasNext()){
+//            o = (Operation)i.next();
+//            System.out.println( o + " responseTime = " + o.getResponseTime());
+//        }
+//        PreemptiveSJFQ preemptiveSJFQ = new PreemptiveSJFQ();
+//        Operation o1 = new Operation(1, 0, 1);
+//        preemptiveSJFQ.enqueue(o1);
 
-        Iterator i = q.iterate();
-        Operation o;
-        while (i.hasNext()){
-            o = (Operation)i.next();
-            System.out.println( o + " responseTime = " + o.getResponseTime());
-        }
+        PreemptiveSJFQ preemptiveSJFQ = new PreemptiveSJFQ();
+        Operation o1 = new Operation(1, 1, 1);
+        Operation o2 = new Operation(2, 1, 2);
+        Operation o3 = new Operation(3, 1, 3);
+        Operation o4 = new Operation(4, 1, 4);
+        preemptiveSJFQ.enqueue(o1);
+        preemptiveSJFQ.enqueue(o2);
+        preemptiveSJFQ.enqueue(o3);
+        preemptiveSJFQ.enqueue(o4);
+
     }
 }

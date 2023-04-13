@@ -73,8 +73,7 @@ public class Operation {
     }
 
     public int getWaiting() {
-        int ret = getTATime() - exeTime;
-        if (ret > 0)
+        if (responseTime != Integer.MAX_VALUE)
             return getTATime() - exeTime;
         else
             return -1;
