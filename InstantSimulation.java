@@ -15,7 +15,7 @@ import javax.swing.JFrame;
  */
 public class InstantSimulation implements Simulation {
 	public OpQueue queue;
-	public Graphics2D graph;
+	public  Graphics2D graph;
 	public static final int defX = 25; //default width (1 second = 25pixels )
 	public static final int defY = 50; //default length
 	//constructor
@@ -84,10 +84,10 @@ public class InstantSimulation implements Simulation {
 		} while (!queue.isEmpty());
 		//renders last process
 		graph.drawString(clock + "", x, y + defY + 15);
-		width = o21.getExecutionTime() * defX;
+		width = o21.getTimeLeft() * defX;
 		graph.drawRect(x, y, width, y);
 		graph.drawString(clock + "", x, y + defY + 15);
-		clock += o21.getExecutionTime();
+		clock += o21.getTimeLeft();
 		x += width;
 		graph.drawString("P" + o21.getID(), x - (currTime / 2.f) * defX, 1.5f * y);
 		//renders last clock of process
