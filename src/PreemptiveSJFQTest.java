@@ -3,6 +3,7 @@ import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -11,16 +12,12 @@ import java.util.Iterator;
 public class PreemptiveSJFQTest {
     @Test
     public void PreemptiveSJFQTest1() {
-        try {
-            PreemptiveSJFQ preemptiveSJFQ = new PreemptiveSJFQ();
-            Operation o1 = new Operation(1, 0, 1);
-            preemptiveSJFQ.enqueue(o1);
-            preemptiveSJFQ.consumeTimeUnit();
-        } catch (IllegalArgumentException exception) {
-            System.out.println("Passed");
-            return;
-        }
-        fail("Program doesn't throw illegal argument excption");
+
+        PreemptiveSJFQ preemptiveSJFQ = new PreemptiveSJFQ();
+        Operation o1 = new Operation(1, 0, 1);
+        preemptiveSJFQ.enqueue(o1);
+        preemptiveSJFQ.consumeTimeUnit();
+        assertNull(preemptiveSJFQ.consumeTimeUnit());
     }
 
     @Test
@@ -34,19 +31,15 @@ public class PreemptiveSJFQTest {
         preemptiveSJFQ.enqueue(o2);
         preemptiveSJFQ.enqueue(o3);
         preemptiveSJFQ.enqueue(o4);
+        assertNull(preemptiveSJFQ.consumeTimeUnit());
         assertNotNull(preemptiveSJFQ.consumeTimeUnit());
     }
 
     @Test
     public void PreemptiveSJFQTest2() {
-        try {
-            PreemptiveSJFQ preemptiveSJFQ = new PreemptiveSJFQ();
-            preemptiveSJFQ.consumeTimeUnit();
-        } catch (IllegalArgumentException e) {
-            System.out.println("PASSED");
-            return;
-        }
-        fail("Program doesn't throw illegal argument excption");
-    }
 
+        PreemptiveSJFQ preemptiveSJFQ = new PreemptiveSJFQ();
+        assertNull(preemptiveSJFQ.consumeTimeUnit());
+
+    }
 }

@@ -170,15 +170,9 @@ public class OperationTest {
 
     @Test
     public void getWaitingTest1() {
-
-        try {
-            Operation o = new Operation(1, 2, 1, 5);
-            o.getWaiting();
-        } catch (IllegalArgumentException e) {
-            System.out.println("Passed");
-            return;
-        }
-        fail("Program doesn't throw illegal argument excption");
+        Operation o = new Operation(1, 2, 1, 5);
+        int actual = o.getWaiting();
+        assertEquals(-1, actual);
 
     }
 

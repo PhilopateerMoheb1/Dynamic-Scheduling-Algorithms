@@ -50,14 +50,10 @@ public class SJFQTest {
 
     @Test
     public void ConsumeTimeUnitTest1() {
-        try {
-            SJFQ sjfq = new SJFQ();
-            sjfq.consumeTimeUnit();
-        } catch (IllegalArgumentException e) {
-            System.out.println("PASSED");
-            return;
-        }
-        fail("Program doesn't throw illegal argument excption");
+
+        SJFQ sjfq = new SJFQ();
+        assertNull(sjfq.consumeTimeUnit());
+
     }
 
     @Test
@@ -71,21 +67,18 @@ public class SJFQTest {
         sjfq.enqueue(o2);
         sjfq.enqueue(o3);
         sjfq.enqueue(o4);
+        sjfq.consumeTimeUnit();
         assertNotNull(sjfq.consumeTimeUnit());
     }
 
     @Test
     public void ConsumeTimeUnitTest3() {
-        try {
-            SJFQ sjfq = new SJFQ();
-            Operation o1 = new Operation(1, 0, 1);
-            sjfq.enqueue(o1);
-            sjfq.consumeTimeUnit();
-        } catch (IllegalArgumentException exception) {
-            System.out.println("Passed");
-            return;
-        }
-        fail("Program doesn't throw illegal argument excption");
+
+        SJFQ sjfq = new SJFQ();
+        Operation o1 = new Operation(1, 0, 1);
+        sjfq.enqueue(o1);
+        assertNull(sjfq.consumeTimeUnit());
+        assertNull(sjfq.consumeTimeUnit());
     }
 
 }
