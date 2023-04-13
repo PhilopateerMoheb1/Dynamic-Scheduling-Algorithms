@@ -22,7 +22,7 @@ public class SJFQ implements OpQueue{
     public void enqueue(Operation process) {
         // check if process is come with arrival time in the past, in this case, drop it
         if (process.getArrival() < Timer)
-            return;
+            throw new IllegalArgumentException("ArrivalTime of operation cannot be before the timer");
 
         allProcess.add(process);
         // check if process will arrive in the future
@@ -76,19 +76,31 @@ public class SJFQ implements OpQueue{
     public int getTimer() { return Timer; }
 
     public static void main(String[] args) {
-        SJFQ q = new SJFQ();
-        Operation o1 = new Operation(1,4,5);
-        Operation o2 = new Operation(2,5,7);
-        Operation o3 = new Operation(3,2,7);
-        Operation o4 = new Operation(4,3,10);
-        q.enqueue(o1);
-        q.enqueue(o2);
-        q.enqueue(o3);
-        q.enqueue(o4);
-        for (int i = 0; i <= 40; i++) {
-            if (i == 4)
-                q.enqueue(new Operation(5,5,2));
-            System.out.println("at time: " + q.getTimer() + ", process in exe: " + q.consumeTimeUnit() );
+//        SJFQ q = new SJFQ();
+//        Operation o1 = new Operation(1,4,5);
+//        Operation o2 = new Operation(2,5,7);
+//        Operation o3 = new Operation(3,2,7);
+//        Operation o4 = new Operation(4,3,10);
+//        q.enqueue(o1);
+//        q.enqueue(o2);
+//        q.enqueue(o3);
+//        q.enqueue(o4);
+//        for (int i = 0; i <= 40; i++) {
+//            if (i == 4)
+//                q.enqueue(new Operation(5,5,2));
+//            System.out.println("at time: " + q.getTimer() + ", process in exe: " + q.consumeTimeUnit() );
+//        }
+        SJFQ sjfq = new SJFQ();
+        Operation o1 = new Operation(1, 1, 1);
+        Operation o2 = new Operation(2, 1, 2);
+        Operation o3 = new Operation(3, 1, 3);
+        Operation o4 = new Operation(4, 1, 4);
+        sjfq.enqueue(o1);
+        sjfq.enqueue(o2);
+        sjfq.enqueue(o3);
+        sjfq.enqueue(o4);
+        while (!sjfq.isEmpty()){
+            System.out.println(sjfq.getTimer() + ": " + sjfq.consumeTimeUnit());
         }
     }
 

@@ -11,7 +11,16 @@ public class Operation {
         this(id, arrivalTime, exeTime,5);
     }
 
-    public Operation(int id, int arrivalTime, int exeTime, int priority){
+    public Operation(int id, int arrivalTime, int exeTime, int priority) throws IllegalArgumentException{
+        if (priority > 10 || priority < 1)
+            throw new IllegalArgumentException("priority must be in range from 1 to 10");
+        if (id < 0)
+            throw new IllegalArgumentException("id must be positive integer");
+        if (arrivalTime < 0)
+            throw new IllegalArgumentException("arrivalTime cannot be negative");
+        if (exeTime < 1)
+            throw new IllegalArgumentException("execution time must be positive");
+
         this.id = id;
         this.arrivalTime = arrivalTime;
         this.exeTime = exeTime;
@@ -34,15 +43,23 @@ public class Operation {
     public int getArrival() { return arrivalTime; }
 
     // set methods
-    public void decrementTimeLeft(int val){
+    public void decrementTimeLeft(int val) throws IllegalArgumentException{
+        if (this.timeLeft - val < 0)
+            throw new IllegalArgumentException("cannot decrement Time lift to negativeTIme");
         this.timeLeft -= val;
     }
 
-    public void setResponseTime(int currentTime) {
+    public void setResponseTime(int currentTime) throws IllegalArgumentException{
+        if (currentTime < 0)
+            throw new IllegalArgumentException("Time to finish cannot be negative");
+        if (currentTime < arrivalTime)
+            throw new IllegalArgumentException("Time to finish cannot be before arrival time");
         this.responseTime = currentTime;
     }
 
-    public void incrementPriority(int val){
+    public void incrementPriority(int val) throws IllegalArgumentException{
+        if (priority +val > 10 || priority+val < 1)
+            throw new IllegalArgumentException("priority must be in range from 1 to 10");
         this.priority += val;
     }
 
@@ -50,12 +67,17 @@ public class Operation {
 
     public int getTATime() {
         if (responseTime == Integer.MAX_VALUE)
+//            throw new IllegalArgumentException("cannot calc TATime before set the Time to Finish");
             return -1;
         return responseTime - arrivalTime;
     }
 
     public int getWaiting() {
-        return getTATime() - exeTime;
+        int ret = getTATime() - exeTime;
+        if (ret > 0)
+            return getTATime() - exeTime;
+        else
+            return -1;
     }
 
     // addition method

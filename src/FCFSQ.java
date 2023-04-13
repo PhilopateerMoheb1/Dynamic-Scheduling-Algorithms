@@ -13,9 +13,9 @@ public class FCFSQ implements OpQueue{
     }
 
     @Override
-    public void enqueue(Operation process) {
+    public void enqueue(Operation process) throws IllegalArgumentException{
         if (process.getArrival() < Timer)
-            return;
+            throw new IllegalArgumentException("ArrivalTime of operation cannot be before the timer");
         q.add(process);
         allProcess.add(process);
     }
