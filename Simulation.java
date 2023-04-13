@@ -14,5 +14,5 @@ public interface Simulation {
 	//getter for the OpQueue used for the drawing
 	public abstract OpQueue getQueue() ;
 	//steps only 1 time unit which is not supported in Instant Simulation
-	public abstract void step();
+	public abstract void step() throws OperationNotSupportedException;
 }
