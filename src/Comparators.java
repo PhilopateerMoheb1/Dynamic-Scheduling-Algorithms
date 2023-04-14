@@ -39,4 +39,29 @@ public class Comparators {
                 return 1;
         }
     }
+
+    static class RRComparator implements Comparator<Operation>{
+        @Override
+        public int compare(Operation o1, Operation o2) {
+            if (o1.getArrival() < o2.getArrival())
+                return -1;
+            else if (o1.getArrival() == o2.getArrival())
+                return 0;
+            else
+                return 1;
+        }
+    }
+
+    static class PriorityComparator implements Comparator<Operation>{
+        @Override
+        public int compare(Operation o1, Operation o2) {
+            if (o1.getPriority() < o2.getPriority())
+                return -1;
+            else if (o1.getPriority() == o2.getPriority())
+                return 0;
+            else
+                return 1;
+        }
+    }
+
 }
