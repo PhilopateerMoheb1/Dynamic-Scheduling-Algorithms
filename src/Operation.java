@@ -20,7 +20,8 @@ public class Operation {
             throw new IllegalArgumentException("arrivalTime cannot be negative");
         if (exeTime < 1)
             throw new IllegalArgumentException("execution time must be positive");
-
+        if (exeTime > Short.MAX_VALUE)
+            throw new IllegalArgumentException("execution time must limited");
         this.id = id;
         this.arrivalTime = arrivalTime;
         this.exeTime = exeTime;
@@ -82,6 +83,11 @@ public class Operation {
     // addition method
     @Override
     public String toString(){
-        return "id: " + this.id +", arrival: " + this.arrivalTime + ", exeTime: " + this.exeTime;
+        return "id: " + this.id +", arrival: " + this.arrivalTime + ", exeTime: " + this.exeTime + ", time left: " + timeLeft;
+    }
+
+    public static void main(String[] args) {
+        Operation o = new Operation(1,1,32000);
+        System.out.println(o);
     }
 }
