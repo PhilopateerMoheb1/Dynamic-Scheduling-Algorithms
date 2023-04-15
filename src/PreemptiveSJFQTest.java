@@ -42,4 +42,33 @@ public class PreemptiveSJFQTest {
         assertNull(preemptiveSJFQ.consumeTimeUnit());
 
     }
+
+    @Test
+    public void PreemptiveSJFQTest6() {
+        PreemptiveSJFQ rr = new PreemptiveSJFQ();
+        Operation o1 = new Operation(1, 0, 7);
+        Operation o2 = new Operation(2, 1, 6);
+        Operation o3 = new Operation(3, 2, 5);
+
+        rr.enqueue(o1);
+        rr.enqueue(o2);
+        rr.enqueue(o3);
+        assertEquals(o1, rr.consumeTimeUnit());
+        assertEquals(o1, rr.consumeTimeUnit());
+        assertEquals(o1, rr.consumeTimeUnit());
+    }
+
+    @Test
+    public void PreemptiveSJFQTest7() {
+        PreemptiveSJFQ rr = new PreemptiveSJFQ();
+        Operation o1 = new Operation(1, 0, 5, 3);
+        Operation o2 = new Operation(2, 0, 5, 1);
+        Operation o3 = new Operation(3, 0, 5, 6);
+
+        rr.enqueue(o1);
+        rr.enqueue(o2);
+        rr.enqueue(o3);
+        assertEquals(o3, rr.consumeTimeUnit());
+
+    }
 }

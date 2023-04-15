@@ -205,4 +205,20 @@ public class OperationTest {
 
     }
 
+    @Test
+
+    public void sameIDTest() {
+        try {
+            Operation o1 = new Operation(1, 2, 1);
+            Operation o2 = new Operation(1, 2, 1);
+            Operation o3 = new Operation(1, 2, 1);
+
+        } catch (IllegalArgumentException e) {
+            System.out.println("Passed");
+            return;
+        }
+        fail("Program doesn't throw illegal argument excption");
+
+    }
+
 }
