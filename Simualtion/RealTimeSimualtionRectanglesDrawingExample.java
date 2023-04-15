@@ -6,14 +6,21 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.Iterator;
+import java.util.concurrent.TimeUnit;
 
+import javax.swing.JPanel;
+import javax.swing.Timer;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
 public class RealTimeSimualtionRectanglesDrawingExample extends JFrame {
     public static final int defX = 25;
     public static final int defY = 50;
+    // Graphics g;
+    Timer timer;
 
     public RealTimeSimualtionRectanglesDrawingExample() {
         super("Rectangles Drawing Demo");
@@ -29,9 +36,9 @@ public class RealTimeSimualtionRectanglesDrawingExample extends JFrame {
      * ---------------------------------------- P1 | P2 | P1| P4 |
      * ----------------------------------------
      */
-    void drawRectangles(Graphics g) {
+    void drawRectangles(Graphics g) throws InterruptedException {
         int width, x = defX, y = defY, clock = 0;
-        PreemptiveSJFQ q = new PreemptiveSJFQ();
+        FCFSQ q = new FCFSQ();
         Operation o1 = new Operation(1, 4, 5);
         Operation o2 = new Operation(2, 25, 7);
         Operation o3 = new Operation(3, 4, 7);
@@ -57,30 +64,27 @@ public class RealTimeSimualtionRectanglesDrawingExample extends JFrame {
         }
         int previousID = o21.getID(), currTime = 0;
 
-        do {
-            Operation o21Temp = o21;
+        while (!q.isEmpty()) {
             o21 = q.consumeTimeUnit();
             if (o21 == null) {
-                if (o21Temp.getID() == previousID && o21Temp != null) {
+                // as when it null and first acces it previuousID will not
+                if (previousID != -1) {
                     is.graph.drawRect(x, y, defX, y);
                     is.graph.drawString(clock + "", x, y + defY + 15);
                     clock++;
                     is.graph.drawString("P" + previousID, x + (1 / 2.f - 0.2f) * defX, 1.5f * y);
                     x += defX;
                     currTime++;
+                    // printPreviousIfNullFlag = false ;
                 }
-
                 // else
                 // printPreviousIfNullFlag = true ;
-                width = defX;
-                is.graph.drawRect(x, y, width, y);
+                is.graph.drawRect(x, y, defX, y);
                 is.graph.drawString(clock + "", x, y + defY + 15);
                 clock += 1;
-                x += width;
+                x += defX;
                 previousID = -1;
-            } // defx width of rectangle and increment clock by 1
-            else if (o21 != null && o21.getID() == previousID) {
-                width = currTime * defX;
+            } else if (o21 != null && o21.getID() == previousID) {
                 is.graph.drawRect(x, y, defX, y);
                 is.graph.drawString(clock + "", x, y + defY + 15);
                 clock++;
@@ -89,7 +93,6 @@ public class RealTimeSimualtionRectanglesDrawingExample extends JFrame {
                 currTime++;
                 previousID = o21.getID();
             } else if (o21 != null && o21.getID() != previousID && previousID != -1) {
-                width = currTime * defX;
                 is.graph.drawRect(x, y, defX, y);
                 is.graph.drawString(clock + "", x, y + defY + 15);
                 clock++;
@@ -98,8 +101,9 @@ public class RealTimeSimualtionRectanglesDrawingExample extends JFrame {
                 currTime = 1;
                 previousID = o21.getID();
             }
-
-        } while (!q.isEmpty());
+            // TimeUnit.SECONDS.sleep(1);
+            // o21 = q.consumeTimeUnit();
+        }
 
         is.graph.drawString(clock + "", x, y + defY + 15);
         width = o21.getExecutionTime() * defX;
@@ -107,14 +111,20 @@ public class RealTimeSimualtionRectanglesDrawingExample extends JFrame {
         is.graph.drawString(clock + "", x, y + defY + 15);
         clock += o21.getExecutionTime();
         x += width;
-        is.graph.drawString("P" + o21.getID(), x - (currTime / 2.f) * defX, 1.5f * y);
+        is.graph.drawString("P" + o21.getID(), x - (currTime / 2.f) * defX, 1.5f *
+                y);
         is.graph.drawString(clock + "", x, y + defY + 15);
     }
     // code to draw rectangles goes here...
 
     public void paint(Graphics g) {
         super.paint(g);
-        drawRectangles(g);
+        try {
+            drawRectangles(g);
+        } catch (InterruptedException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
     }
 
     public static void main(String[] args) throws Exception {

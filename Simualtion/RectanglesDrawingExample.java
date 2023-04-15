@@ -6,6 +6,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GridLayout;
 import java.util.Iterator;
+import java.util.Timer;
 
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
@@ -28,9 +29,10 @@ public class RectanglesDrawingExample extends JFrame {
      * ---------------------------------------- P1 | P2 | P1| P4 |
      * ----------------------------------------
      */
+
     void drawRectangles(Graphics g) {
         int width, x = defX, y = defY, clock = 0;
-        PreemptiveSJFQ q = new PreemptiveSJFQ();
+        FCFSQ q = new FCFSQ();
         Operation o1 = new Operation(1, 4, 5);
         Operation o2 = new Operation(2, 25, 7);
         Operation o3 = new Operation(3, 4, 7);
