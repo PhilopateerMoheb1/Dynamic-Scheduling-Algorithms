@@ -88,7 +88,10 @@ public class PreemptivePriorityQTest {
         Operation o2 = new Operation(2, 0, 7, 2);
         rr.enqueue(o1);
         rr.enqueue(o2);
-        assertEquals(o2, rr.consumeTimeUnit());
+        Operation expected = new Operation(1, 0, 3, 1);
+        expected.decrementTimeLeft(1);
+        int actual = rr.consumeTimeUnit().getTimeLeft();
+        assertEquals(expected.getTimeLeft(), actual);
     }
 
     @Test
@@ -101,7 +104,7 @@ public class PreemptivePriorityQTest {
         rr.enqueue(o1);
         rr.enqueue(o2);
         rr.enqueue(o3);
-        assertEquals(o3, rr.consumeTimeUnit());
+        assertEquals(o1, rr.consumeTimeUnit());
     }
 
 }

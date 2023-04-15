@@ -61,9 +61,9 @@ public class PreemptiveSJFQTest {
     @Test
     public void PreemptiveSJFQTest7() {
         PreemptiveSJFQ rr = new PreemptiveSJFQ();
-        Operation o1 = new Operation(1, 0, 5, 3);
-        Operation o2 = new Operation(2, 0, 5, 1);
-        Operation o3 = new Operation(3, 0, 5, 6);
+        Operation o1 = new Operation(1, 0, 5);
+        Operation o2 = new Operation(2, 0, 5);
+        Operation o3 = new Operation(3, 0, 5);
 
         rr.enqueue(o1);
         rr.enqueue(o2);
