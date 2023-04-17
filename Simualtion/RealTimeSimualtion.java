@@ -42,7 +42,7 @@ public class RealTimeSimualtion implements Simulation {
         graph.setFont(new Font("TimesRoman", Font.BOLD, 12));
         graph.setColor(Color.BLACK);
         Operation o21 = null;
-        while (!queue.isEmpty() && o21 == null) {
+        if (!queue.isEmpty() && o21 == null) {
             o21 = queue.consumeTimeUnit();
             if (o21 == null) {
                 width = defX;
@@ -54,7 +54,7 @@ public class RealTimeSimualtion implements Simulation {
         }
         int previousID = o21.getID(), currTime = 0;
 
-        while (!queue.isEmpty()) {
+        if (!queue.isEmpty()) {
             o21 = queue.consumeTimeUnit();
             if (o21 == null) {
                 // as when it null and first acces it previuousID will not
