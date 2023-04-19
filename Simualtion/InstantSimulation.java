@@ -1,5 +1,4 @@
-package Simualtion;
-
+package Simulation;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
@@ -14,11 +13,11 @@ import javax.swing.JFrame;
  * @author : Mina Mounir
  * performs instant simulation on a Graphics2D graph 
  */
-public class InstantSimulation implements Simulation {
+public class InstantSimulationB implements Simulation {
 	private OpQueue queue;
-	Graphics2D graph;
+	private Graphics2D graph;
 
-	public InstantSimulation(OpQueue queue) {
+	public InstantSimulationB(OpQueue queue) {
 		this.queue = queue;
 	}
 
@@ -58,11 +57,11 @@ public class InstantSimulation implements Simulation {
 
 		}
 
-		void drawRectangles(Graphics g) {
+		private void drawRectangles(Graphics g) {
+			int width, x = defX, y = defY, clock = 0;
 			graph = (Graphics2D) g;
 			graph.setFont(new Font("TimesRoman", Font.BOLD, 12));
 			graph.setColor(Color.BLACK);
-			int width, x = defX, y = defY, clock = 0;
 			Operation o21 = null;
 			while (!queue.isEmpty() && o21 == null) {
 				o21 = queue.consumeTimeUnit();
@@ -73,9 +72,12 @@ public class InstantSimulation implements Simulation {
 					clock += 1;
 					x += width;
 				}
+
 			}
-			int previousID = o21.getID(), currTime = 0;
-			do {
+			int previousID = o21.getID(), currTime = 1;
+
+			while (!queue.isEmpty()) {
+				o21 = queue.consumeTimeUnit();
 				if (o21 == null) {
 					if (previousID != -1) {
 						width = currTime * defX;
@@ -105,8 +107,9 @@ public class InstantSimulation implements Simulation {
 					currTime = 1;
 					previousID = o21.getID();
 				}
-				o21 = queue.consumeTimeUnit();
-			} while (!queue.isEmpty());
+
+			}
+
 			graph.drawString(clock + "", x, y + defY + 15);
 			width = o21.getExecutionTime() * defX;
 			graph.drawRect(x, y, width, y);
@@ -123,5 +126,3 @@ public class InstantSimulation implements Simulation {
 		}
 
 	}
-
-}
