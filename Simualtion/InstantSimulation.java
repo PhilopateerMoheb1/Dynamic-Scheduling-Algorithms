@@ -1,5 +1,4 @@
-package p2;
-
+package Simualtion;
 
 import java.awt.Color;
 import java.awt.Font;
@@ -10,13 +9,14 @@ import java.util.Iterator;
 
 import javax.naming.OperationNotSupportedException;
 import javax.swing.JFrame;
+
 /*
  * @author : Mina Mounir
  * performs instant simulation on a Graphics2D graph 
  */
 public class InstantSimulation implements Simulation {
 	private OpQueue queue;
-	private  Graphics2D graph;
+	Graphics2D graph;
 
 	public InstantSimulation(OpQueue queue) {
 		this.queue = queue;
@@ -24,12 +24,12 @@ public class InstantSimulation implements Simulation {
 
 	@Override
 	public BufferedImage render() {
-	
+
 		BufferedImage image = new BufferedImage(420, 150, BufferedImage.TYPE_INT_RGB);
-        graph = (Graphics2D) image.getGraphics();
+		graph = (Graphics2D) image.getGraphics();
 		RectanglesDrawing r = new RectanglesDrawing();
 		r.drawRectangles(graph);
-		
+
 		return image;
 	}
 
@@ -121,7 +121,7 @@ public class InstantSimulation implements Simulation {
 			super.paint(g);
 			drawRectangles(g);
 		}
-	
+
 	}
-	
+
 }

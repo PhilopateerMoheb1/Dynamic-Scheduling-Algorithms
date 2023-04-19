@@ -3,6 +3,7 @@ package Simualtion;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
 
 import javax.naming.OperationNotSupportedException;
 
@@ -25,8 +26,10 @@ public class RealTimeSimualtion implements Simulation {
     }
 
     @Override
-    public Graphics2D render() {
-        return graph;
+    public BufferedImage render() {
+        BufferedImage image = new BufferedImage(420, 150, BufferedImage.TYPE_INT_RGB);
+        graph = (Graphics2D) image.getGraphics();
+        return image;
     }
 
     @Override

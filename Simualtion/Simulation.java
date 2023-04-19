@@ -2,6 +2,7 @@ package Simualtion;
 
 //author : Mina Mounir
 import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
 import java.lang.Exception;
 
 import javax.naming.OperationNotSupportedException;
