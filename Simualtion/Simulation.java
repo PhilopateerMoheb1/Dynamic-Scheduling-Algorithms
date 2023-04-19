@@ -16,7 +16,7 @@ public interface Simulation {
 	}
 
 	// draws the simulation based inside Graphics2D object and returns it
-	public abstract Graphics2D render();
+	public abstract BufferedImage render();
 
 	// getter for the OpQueue used for the drawing
 	public abstract OpQueue getQueue();
