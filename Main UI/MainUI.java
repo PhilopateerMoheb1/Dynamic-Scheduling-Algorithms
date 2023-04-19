@@ -2,19 +2,43 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
-package processmanager;
+package mainui;
+
+import java.awt.Color;
+import java.awt.Dialog;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.util.ArrayList;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableColumn;
+
 
 /**
  *
- * @author Ghaith
+ * @author Ghaith,3laa
  */
 public class MainUI extends javax.swing.JFrame {
-
+    int rowcnt = 1;
+    boolean selected = false;
+    String scheduleType = " ";
+    String PNP = " ";//stands for preemptive non preemptive
+    int timeQuantum ;
+    int exeTime,arrivalTime,Priority,pid;
+    ArrayList<ArrayList<Integer>> processes = new ArrayList<ArrayList<Integer>>();
+    ArrayList<Integer> row;
+    boolean preemptive = false;
+    //Object rows[][] = new Object[rowcnt][9];
+    
     /**
      * Creates new form MainUI
      */
     public MainUI() {
+        //jTextField1.setVisible(false);
         initComponents();
+         
     }
 
     /**
@@ -26,6 +50,9 @@ public class MainUI extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jMenuItem1 = new javax.swing.JMenuItem();
+        jRadioButtonMenuItem1 = new javax.swing.JRadioButtonMenuItem();
+        jMenuItem2 = new javax.swing.JMenuItem();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTable1 = new javax.swing.JTable();
         jComboBox1 = new javax.swing.JComboBox<>();
@@ -37,6 +64,17 @@ public class MainUI extends javax.swing.JFrame {
         jButton4 = new javax.swing.JButton();
         jButton5 = new javax.swing.JButton();
         jButton6 = new javax.swing.JButton();
+        jTextField1 = new javax.swing.JTextField();
+        jLabel1 = new javax.swing.JLabel();
+        jButton7 = new javax.swing.JButton();
+        jButton8 = new javax.swing.JButton();
+
+        jMenuItem1.setText("jMenuItem1");
+
+        jRadioButtonMenuItem1.setSelected(true);
+        jRadioButtonMenuItem1.setText("jRadioButtonMenuItem1");
+
+        jMenuItem2.setText("jMenuItem2");
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Process scheduler");
@@ -44,55 +82,6 @@ public class MainUI extends javax.swing.JFrame {
         jTable1.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null},
                 {null, null, null, null, null, null, null, null}
             },
             new String [] {
@@ -117,11 +106,30 @@ public class MainUI extends javax.swing.JFrame {
         jTable1.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         jTable1.setRowHeight(25);
         jTable1.setSurrendersFocusOnKeystroke(true);
+        jTable1.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
+            public void propertyChange(java.beans.PropertyChangeEvent evt) {
+                jTable1PropertyChange(evt);
+            }
+        });
+        jTable1.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                jTable1KeyPressed(evt);
+            }
+        });
         jScrollPane1.setViewportView(jTable1);
         jTable1.getAccessibleContext().setAccessibleDescription("");
 
         jComboBox1.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
         jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "FCFS", "Priority queue", "Roundrobin", "SJF" }));
+        jComboBox1.addAncestorListener(new javax.swing.event.AncestorListener() {
+            public void ancestorAdded(javax.swing.event.AncestorEvent evt) {
+                jComboBox1AncestorAdded(evt);
+            }
+            public void ancestorMoved(javax.swing.event.AncestorEvent evt) {
+            }
+            public void ancestorRemoved(javax.swing.event.AncestorEvent evt) {
+            }
+        });
         jComboBox1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jComboBox1ActionPerformed(evt);
@@ -130,6 +138,20 @@ public class MainUI extends javax.swing.JFrame {
 
         jComboBox2.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
         jComboBox2.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "preemtive", "non-preemtive" }));
+        jComboBox2.addAncestorListener(new javax.swing.event.AncestorListener() {
+            public void ancestorAdded(javax.swing.event.AncestorEvent evt) {
+                jComboBox2AncestorAdded(evt);
+            }
+            public void ancestorMoved(javax.swing.event.AncestorEvent evt) {
+            }
+            public void ancestorRemoved(javax.swing.event.AncestorEvent evt) {
+            }
+        });
+        jComboBox2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jComboBox2ActionPerformed(evt);
+            }
+        });
 
         jPanel1.setBackground(new java.awt.Color(255, 255, 255));
 
@@ -141,11 +163,16 @@ public class MainUI extends javax.swing.JFrame {
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 230, Short.MAX_VALUE)
+            .addGap(0, 254, Short.MAX_VALUE)
         );
 
         jButton1.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
         jButton1.setText("Run Instant Simulation");
+        jButton1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jButton1MouseClicked(evt);
+            }
+        });
         jButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton1ActionPerformed(evt);
@@ -160,31 +187,71 @@ public class MainUI extends javax.swing.JFrame {
             }
         });
 
-        jButton2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/processmanager/icons8-pause-80.png"))); // NOI18N
+        jButton2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/mainui/icons8-pause-80.png"))); // NOI18N
         jButton2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton2ActionPerformed(evt);
             }
         });
 
-        jButton4.setIcon(new javax.swing.ImageIcon(getClass().getResource("/processmanager/icons8-forward-40.png"))); // NOI18N
+        jButton4.setIcon(new javax.swing.ImageIcon(getClass().getResource("/mainui/icons8-forward-40.png"))); // NOI18N
         jButton4.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton4ActionPerformed(evt);
             }
         });
 
-        jButton5.setIcon(new javax.swing.ImageIcon(getClass().getResource("/processmanager/icons8-restart-40.png"))); // NOI18N
+        jButton5.setIcon(new javax.swing.ImageIcon(getClass().getResource("/mainui/icons8-restart-40.png"))); // NOI18N
         jButton5.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton5ActionPerformed(evt);
             }
         });
 
-        jButton6.setIcon(new javax.swing.ImageIcon(getClass().getResource("/processmanager/icons8-stop-80.png"))); // NOI18N
+        jButton6.setIcon(new javax.swing.ImageIcon(getClass().getResource("/mainui/icons8-stop-40.png"))); // NOI18N
         jButton6.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton6ActionPerformed(evt);
+            }
+        });
+
+        jTextField1.addInputMethodListener(new java.awt.event.InputMethodListener() {
+            public void caretPositionChanged(java.awt.event.InputMethodEvent evt) {
+            }
+            public void inputMethodTextChanged(java.awt.event.InputMethodEvent evt) {
+                jTextField1InputMethodTextChanged(evt);
+            }
+        });
+        jTextField1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jTextField1ActionPerformed(evt);
+            }
+        });
+        jTextField1.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                jTextField1KeyPressed(evt);
+            }
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                jTextField1KeyReleased(evt);
+            }
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                jTextField1KeyTyped(evt);
+            }
+        });
+
+        jLabel1.setText("Quantum");
+
+        jButton7.setIcon(new javax.swing.ImageIcon(getClass().getResource("/mainui/icons8-plus-24.png"))); // NOI18N
+        jButton7.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jButton7MouseClicked(evt);
+            }
+        });
+
+        jButton8.setIcon(new javax.swing.ImageIcon(getClass().getResource("/mainui/icons8-minus-24.png"))); // NOI18N
+        jButton8.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jButton8MouseClicked(evt);
             }
         });
 
@@ -201,50 +268,132 @@ public class MainUI extends javax.swing.JFrame {
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 228, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jComboBox2, javax.swing.GroupLayout.PREFERRED_SIZE, 228, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(18, 18, 18)
-                        .addComponent(jButton5, javax.swing.GroupLayout.PREFERRED_SIZE, 93, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(jButton6, javax.swing.GroupLayout.PREFERRED_SIZE, 93, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 93, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 93, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 22, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 47, Short.MAX_VALUE)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                .addComponent(jLabel1)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(jButton5, javax.swing.GroupLayout.PREFERRED_SIZE, 57, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 93, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(jButton6, javax.swing.GroupLayout.PREFERRED_SIZE, 52, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 104, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, Short.MAX_VALUE)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jButton1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jButton3, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE))))
                 .addContainerGap())
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jButton8, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(47, 47, 47)
+                .addComponent(jButton7, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(489, 489, 489))
         );
+
+        layout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {jButton5, jButton6});
+
+        layout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {jLabel1, jTextField1});
+
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 267, Short.MAX_VALUE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 156, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(13, 13, 13)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jButton7)
+                    .addComponent(jButton8))
+                .addGap(18, 18, 18)
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                            .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jComboBox2, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addComponent(jButton2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 93, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                            .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 93, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jButton5, javax.swing.GroupLayout.PREFERRED_SIZE, 93, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton6, javax.swing.GroupLayout.PREFERRED_SIZE, 93, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap())
+                .addGap(10, 10, 10)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jButton1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jButton5)
+                                .addGap(2, 2, 2))
+                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                                .addGap(6, 6, 6)
+                                .addComponent(jLabel1)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jButton6, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jButton4, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jButton2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 100, Short.MAX_VALUE)))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(jComboBox2, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(37, Short.MAX_VALUE))
         );
 
+        layout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[] {jButton5, jButton6});
+
+        layout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[] {jLabel1, jTextField1});
+
         pack();
+        setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
     private void jComboBox1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox1ActionPerformed
         // TODO add your handling code here:
+        scheduleType = jComboBox1.getSelectedItem().toString();
+        
+        
+        //System.out.println(scheduleType);
+       /////////////////////       for priority column
+      
+       if(scheduleType == "Roundrobin"){
+//           timeQuantum di = new timeQuantum();
+//           di.setVisible(true);
+//           //di.requestFocus();
+//           di.setDefaultCloseOperation(1);
+             jTextField1.setVisible(true);
+             jLabel1.setVisible(true);
+//             timeQuantum = Integer.parseInt(jTextField1.getText());
+//             System.out.println(timeQuantum);
+             
+       } 
+       else {
+            jLabel1.setVisible(false);
+            jTextField1.setVisible(false);
+       }
+       if((scheduleType == "FCFS" ||scheduleType == "SJF" ||scheduleType == "Roundrobin") && selected == false){
+            jTable1.removeColumn(jTable1.getColumnModel().getColumn(3));
+            selected = true;
+            Priority = 0;
+        }
+        if(scheduleType == "Priority queue" && selected){
+            jTable1.addColumn(new TableColumn(3));
+            jTable1.getColumnModel().moveColumn(7, 3);
+            selected = false;
+            
+        }
+        if(scheduleType == "FCFS" ||scheduleType == "Roundrobin"){
+            jComboBox2.setEnabled(false);
+            PNP = " ";
+        }
+        else
+        {
+            jComboBox2.setEnabled(true);
+            PNP = jComboBox2.getSelectedItem().toString();
+            //jComboBox2.actionPerformed(evt);
+            //getSelectedItem().toString();
+        }
+       
+        
+      /////////////////////////////////////////////////////
+      
     }//GEN-LAST:event_jComboBox1ActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
@@ -271,6 +420,281 @@ public class MainUI extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_jButton6ActionPerformed
 
+    private void jComboBox1AncestorAdded(javax.swing.event.AncestorEvent evt) {//GEN-FIRST:event_jComboBox1AncestorAdded
+        
+        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] {"Schedule Type", "FCFS", "Priority queue", "Roundrobin", "SJF" }));
+        
+    }//GEN-LAST:event_jComboBox1AncestorAdded
+
+    private void jTextField1KeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextField1KeyTyped
+        // TODO add your handling code here:
+                
+                
+    }//GEN-LAST:event_jTextField1KeyTyped
+
+    private void jTextField1KeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextField1KeyPressed
+        // TODO add your handling code here:
+      
+    }//GEN-LAST:event_jTextField1KeyPressed
+
+    private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField1ActionPerformed
+        // TODO add your handling code here:
+//        
+    }//GEN-LAST:event_jTextField1ActionPerformed
+
+    private void jTable1PropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_jTable1PropertyChange
+        // TODO add your handling code here:
+   
+    }//GEN-LAST:event_jTable1PropertyChange
+
+    private void jTable1KeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTable1KeyPressed
+     
+    }//GEN-LAST:event_jTable1KeyPressed
+
+    private void jTextField1InputMethodTextChanged(java.awt.event.InputMethodEvent evt) {//GEN-FIRST:event_jTextField1InputMethodTextChanged
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jTextField1InputMethodTextChanged
+
+    private void jButton1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton1MouseClicked
+        System.out.println(rowcnt); 
+     for(int i=0;i<rowcnt;i++){
+         row = new ArrayList<>();
+      Object ariv = jTable1.getModel().getValueAt(i, 2);
+      Object exe = jTable1.getModel().getValueAt(i, 1);
+      Object pidd = jTable1.getModel().getValueAt(i, 0);
+      Object prio = null;
+      if(scheduleType.equals("Priority queue")){
+          prio = jTable1.getModel().getValueAt(i, 3);
+      }
+      else{
+          Priority = 0;
+      }
+      if(scheduleType.equals("Roundrobin") && !jTextField1.getText().isEmpty()){
+          //System.out.println("================================================");
+         
+                //try {
+                      timeQuantum = Integer.parseInt(jTextField1.getText());
+//         } catch (NumberFormatException nfe) {
+//             JOptionPane.showMessageDialog(new JFrame(), "Time Quantum must be number", "Error",
+//             JOptionPane.ERROR_MESSAGE);
+//         }
+      }
+      else{
+          timeQuantum = 0;
+      }
+        if(exe != null){
+            exeTime = Integer.parseInt(exe.toString());
+        }
+        if(ariv != null){
+            arrivalTime = Integer.parseInt(ariv.toString());
+        }
+        else{
+            arrivalTime = -1;
+        }
+        if(prio != null){
+            Priority = Integer.parseInt(prio.toString());
+        }
+        if(pidd != null){
+            pid = Integer.parseInt(pidd.toString());
+        }
+       System.out.println("execution :"+exeTime+",arrival :"+arrivalTime+",priority :"+Priority+",pid :"+pid+",timeQuantum: "+timeQuantum);
+       row.add(pid);
+       row.add(exeTime);
+       row.add(arrivalTime);
+       row.add(Priority);
+       row.add(timeQuantum);
+       processes.add(i, row);
+     }
+     // print all variables in excel
+     for(int i=0;i<rowcnt;i++){
+         for(int j=0;j<5;j++)
+             System.out.print(processes.get(i).get(j)+" ");
+         System.out.println();
+     }
+     //Simulation gantt ;
+       ///////////////////////////////////////////////////////////
+       ////////////////////  create queues ///////////////////////
+       if(scheduleType.equals("FCFS") && exeTime > 0 && arrivalTime > -1){
+           System.out.println("==================================");
+           System.out.println("Schedule type: "+ scheduleType +", preemptive and non preemptive : "+PNP);
+           FCFSQ fifo = new FCFSQ();
+           
+           Operation o1;
+           //System.out.println(rowcnt);
+           for(int i=0;i<rowcnt;i++){
+                 o1 = new Operation(processes.get(i).get(0),processes.get(i).get(2),processes.get(i).get(1));
+                 fifo.enqueue(o1);
+           }
+           //Simulation.getInstance(fifo, true);
+           //gantt = new InstantSimulation(fifo);
+           InstantSimulation gach = (InstantSimulation) Simulation.getInstance(fifo, true);
+           System.out.println("////////////////////////////////////");
+           //System.out.println(gach.graph);
+           
+           Graphics g2  = jPanel1.getGraphics();
+           g2.drawImage(gach.render(), 0, 0,jPanel1.getWidth(),jPanel1.getHeight(), null);
+           //jPanel1.setBackground(Color.WHITE);
+           //g2.dispose();
+            
+          // jPanel1.print(g2);
+          //jPanel1.setBackground(Color.WHITE);
+           //gach.graph = g2;
+           System.out.println("mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm");
+           //jPanel1.paint((Graphics)g2);
+           //print(g2);
+           
+       }
+       else if(scheduleType.equals("Roundrobin") && exeTime > 0 && arrivalTime > -1 && timeQuantum > 0){
+           System.out.println("==================================");
+            System.out.println("Schedule type: "+ scheduleType +", preemptive and non preemptive : "+PNP);
+          RoundRobin RR = new RoundRobin(processes.get(0).get(4));
+          Operation o2;
+           for(int i=0;i<rowcnt;i++){
+                 o2 = new Operation(processes.get(i).get(0),processes.get(i).get(2),processes.get(i).get(1));
+                 RR.enqueue(o2);
+           }
+           
+           InstantSimulation gach = (InstantSimulation) Simulation.getInstance(RR, true);
+           System.out.println("////////////////////////////////////");
+           //System.out.println(gach.graph);
+           
+           Graphics g2  = jPanel1.getGraphics();
+           g2.drawImage(gach.render(), 0, 0,jPanel1.getWidth(),jPanel1.getHeight(), null);
+       }
+       else if(scheduleType.equals("Priority queue")  && !PNP.equals("Preemptive/non-Preemptive") && exeTime > 0 && arrivalTime > -1 && Priority >0){
+           System.out.println("==================================");
+            System.out.println("Schedule type: "+ scheduleType +", preemptive and non preemptive : "+PNP);
+           
+            
+            Operation o3;
+            if(PNP.equals("preemtive")){
+                 PreemptivePriorityQ priority_to_print = new PreemptivePriorityQ();
+                for(int i=0;i<rowcnt;i++){
+                 o3 = new Operation(processes.get(i).get(0),processes.get(i).get(2),processes.get(i).get(1),processes.get(i).get(3));
+                 priority_to_print.enqueue(o3);
+           }
+            //////////////////////////////////
+            InstantSimulation gach = (InstantSimulation) Simulation.getInstance(priority_to_print, true);
+            System.out.println("////////////////////////////////////");
+           //System.out.println(gach.graph);
+           
+           Graphics g2  = jPanel1.getGraphics();
+           g2.drawImage(gach.render(), 0, 0,jPanel1.getWidth(),jPanel1.getHeight(), null);
+            }
+            else{
+                PriorityQ prm = new PriorityQ();
+                
+                for(int i=0;i<rowcnt;i++){
+                 o3 = new Operation(processes.get(i).get(0),processes.get(i).get(2),processes.get(i).get(1),processes.get(i).get(3));
+                 prm.enqueue(o3);
+           }
+            //////////////////////////////////
+            InstantSimulation gach = (InstantSimulation) Simulation.getInstance(prm, true);
+            System.out.println("////////////////////////////////////");
+           //System.out.println(gach.graph);
+           
+           Graphics g2  = jPanel1.getGraphics();
+           g2.drawImage(gach.render(), 0, 0,jPanel1.getWidth(),jPanel1.getHeight(), null);
+            }
+       }
+       else if(scheduleType.equals("SJF") && !(PNP.equals("Preemptive/non-Preemptive"))&& exeTime > 0 && arrivalTime > -1){
+           System.out.println("==================================");
+            System.out.println("Schedule type: "+ scheduleType +", preemptive and non preemptive : "+PNP);
+            Operation o4;
+            if(PNP.equals("preemtive")){
+                PreemptiveSJFQ pmsjf = new PreemptiveSJFQ();
+                for(int i=0;i<rowcnt;i++){
+                 o4 = new Operation(processes.get(i).get(0),processes.get(i).get(2),processes.get(i).get(1));
+                 pmsjf.enqueue(o4);
+           }
+                InstantSimulation gach = (InstantSimulation) Simulation.getInstance(pmsjf, true);
+            System.out.println("////////////////////////////////////");
+           //System.out.println(gach.graph);
+           
+           Graphics g2  = jPanel1.getGraphics();
+           g2.drawImage(gach.render(), 0, 0,jPanel1.getWidth(),jPanel1.getHeight(), null);
+            }
+            else{
+                 SJFQ sjf = new SJFQ();
+                for(int i=0;i<rowcnt;i++){
+                 o4 = new Operation(processes.get(i).get(0),processes.get(i).get(2),processes.get(i).get(1));
+                 sjf.enqueue(o4);
+           }
+                InstantSimulation gach = (InstantSimulation) Simulation.getInstance(sjf, true);
+            System.out.println("////////////////////////////////////");
+           //System.out.println(gach.graph);
+           
+           Graphics g2  = jPanel1.getGraphics();
+           g2.drawImage(gach.render(), 0, 0,jPanel1.getWidth(),jPanel1.getHeight(), null);
+            }
+       }
+       // you can add specific error detection message for user with each else if above
+       else{
+            JOptionPane.showMessageDialog(new JFrame(), "Check your input values", "ERROR",
+        JOptionPane.ERROR_MESSAGE);
+       }
+       
+    }//GEN-LAST:event_jButton1MouseClicked
+
+   
+    private void jComboBox2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox2ActionPerformed
+        // TODO add your handling code here:
+        
+        PNP = jComboBox2.getSelectedItem().toString();
+        //System.out.println(PNP);
+    }//GEN-LAST:event_jComboBox2ActionPerformed
+
+    private void jComboBox2AncestorAdded(javax.swing.event.AncestorEvent evt) {//GEN-FIRST:event_jComboBox2AncestorAdded
+        // TODO add your handling code here:
+        jComboBox2.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] {"Preemptive/non-Preemptive","preemtive", "non-preemtive" }));
+    }//GEN-LAST:event_jComboBox2AncestorAdded
+
+    private void jButton7MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton7MouseClicked
+        // TODO add your handling code here:
+        rowcnt = jTable1.getRowCount();
+        System.out.println(rowcnt);
+
+                DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
+                // for insert row always at top 
+                // new process always at the top
+                //model.insertRow(0,new String[]{ null, null, null,null,null,null,null,null,null});
+                
+                 // to append new row uncomment the blew line of code
+                model.addRow(new String[]{ null, null, null,null,null,null,null,null,null});
+      rowcnt++;
+    }//GEN-LAST:event_jButton7MouseClicked
+
+    private void jButton8MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton8MouseClicked
+        // TODO add your handling code here:
+        rowcnt = jTable1.getRowCount();
+      
+       DefaultTableModel model = (DefaultTableModel) this.jTable1.getModel();
+         int[] rows = jTable1.getSelectedRows();
+         if(rows.length == 0){
+             JOptionPane.showMessageDialog(new JFrame(), "select rows to be deleted", "Warning",
+        JOptionPane.WARNING_MESSAGE);
+         }
+        for(int i=0;i<rows.length;i++){
+             model.removeRow(rows[i]-i);
+             rowcnt--;
+        }
+        
+    }//GEN-LAST:event_jButton8MouseClicked
+
+    private void jTextField1KeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextField1KeyReleased
+        // TODO add your handling code here:
+         try {
+         Integer.parseInt(jTextField1.getText());
+    } catch (NumberFormatException nfe) {
+        
+        jTextField1.setText("");
+         JOptionPane.showMessageDialog(new JFrame(), "Time Quantum must be number", "Error",JOptionPane.ERROR_MESSAGE);
+    }
+       
+    }//GEN-LAST:event_jTextField1KeyReleased
+/////////////////////////////////////////////////
+    
+/////////////////////////////////////////////////
     /**
      * @param args the command line arguments
      */
@@ -301,10 +725,12 @@ public class MainUI extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
+                 //new RectanglesDrawing().setVisible(true);
                 new MainUI().setVisible(true);
             }
         });
     }
+    
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
@@ -313,10 +739,17 @@ public class MainUI extends javax.swing.JFrame {
     private javax.swing.JButton jButton4;
     private javax.swing.JButton jButton5;
     private javax.swing.JButton jButton6;
+    private javax.swing.JButton jButton7;
+    private javax.swing.JButton jButton8;
     private javax.swing.JComboBox<String> jComboBox1;
     private javax.swing.JComboBox<String> jComboBox2;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JMenuItem jMenuItem1;
+    private javax.swing.JMenuItem jMenuItem2;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JRadioButtonMenuItem jRadioButtonMenuItem1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable jTable1;
+    private javax.swing.JTextField jTextField1;
     // End of variables declaration//GEN-END:variables
 }
