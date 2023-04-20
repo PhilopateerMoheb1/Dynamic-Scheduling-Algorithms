@@ -20,7 +20,7 @@ import org.hamcrest.Condition.Step;
 public class RealTimeSimualtion implements Simulation {
     private OpQueue queue;
     private Graphics2D graph;
-    private BufferedImage image;
+    private BufferedImage image; // Buffered image as consturctor
     public static final int defX = 25; // default width (1 second = 25pixels )
     public static final int defY = 50; // default length
 
@@ -106,6 +106,7 @@ public class RealTimeSimualtion implements Simulation {
                     }
                     // else
                     // printPreviousIfNullFlag = true ;
+
                     graph.drawRect(x, y, defX, y);
                     graph.drawString(clock + "", x, y + defY + 15);
                     clock += 1;
