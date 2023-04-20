@@ -20,19 +20,22 @@ import org.hamcrest.Condition.Step;
 public class RealTimeSimualtion implements Simulation {
     private OpQueue queue;
     private Graphics2D graph;
+    private Graphics2D NowGraph;
+
     private BufferedImage image; // Buffered image as consturctor
     public static final int defX = 25; // default width (1 second = 25pixels )
     public static final int defY = 50; // default length
 
     // constructor
     public RealTimeSimualtion(OpQueue queue) {
-        BufferedImage image = new BufferedImage(420, 150, BufferedImage.TYPE_INT_RGB);
-        graph = (Graphics2D) image.getGraphics();
         this.queue = queue;
     }
 
     @Override
     public BufferedImage render() {
+        BufferedImage image = new BufferedImage(420, 150, BufferedImage.TYPE_INT_RGB);
+        NowGraph = (Graphics2D) image.getGraphics();
+        NowGraph = graph;
         return image;
     }
 
