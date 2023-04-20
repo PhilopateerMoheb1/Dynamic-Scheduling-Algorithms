@@ -1,4 +1,4 @@
-package Simualtion;
+package Simulation;
 
 import java.awt.Color;
 import java.awt.Font;
@@ -15,113 +15,120 @@ import javax.swing.JFrame;
  * performs instant simulation on a Graphics2D graph 
  */
 public class InstantSimulation implements Simulation {
-	private OpQueue queue;
-	Graphics2D graph;
 
-	public InstantSimulation(OpQueue queue) {
-		this.queue = queue;
-	}
+    private OpQueue queue;
+    private Graphics2D graph;
 
-	@Override
-	public BufferedImage render() {
+    public InstantSimulation(OpQueue queue) {
+        this.queue = queue;
+    }
 
-		BufferedImage image = new BufferedImage(420, 150, BufferedImage.TYPE_INT_RGB);
-		graph = (Graphics2D) image.getGraphics();
-		RectanglesDrawing r = new RectanglesDrawing();
-		r.drawRectangles(graph);
+    @Override
+    public BufferedImage render() {
 
-		return image;
-	}
+        BufferedImage image = new BufferedImage(420, 150, BufferedImage.TYPE_INT_RGB);
+        graph = (Graphics2D) image.getGraphics();
+        RectanglesDrawing r = new RectanglesDrawing();
+        r.drawRectangles(graph);
 
-	@Override
-	public OpQueue getQueue() {
-		return queue;
-	}
+        return image;
+    }
 
-	@Override
-	public void step() throws OperationNotSupportedException {
-		throw new OperationNotSupportedException("not supported in instant simulation");
+    @Override
+    public OpQueue getQueue() {
+        return queue;
+    }
 
-	}
+    @Override
+    public void step() throws OperationNotSupportedException {
+        throw new OperationNotSupportedException("not supported in instant simulation");
 
-	private class RectanglesDrawing extends JFrame {
-		private static final int defX = 25;
-		private static final int defY = 50;
+    }
 
-		private RectanglesDrawing() {
-			super("Rectangles Drawing Demo");
+    private class RectanglesDrawing extends JFrame {
 
-			getContentPane().setBackground(Color.WHITE);
-			setSize(480, 200);
-			setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-			setLocationRelativeTo(null);
+        private static final int defX = 25;
+        private static final int defY = 50;
 
-		}
+        private RectanglesDrawing() {
+            super("Rectangles Drawing Demo");
 
-		void drawRectangles(Graphics g) {
-			graph = (Graphics2D) g;
-			graph.setFont(new Font("TimesRoman", Font.BOLD, 12));
-			graph.setColor(Color.BLACK);
-			int width, x = defX, y = defY, clock = 0;
-			Operation o21 = null;
-			while (!queue.isEmpty() && o21 == null) {
-				o21 = queue.consumeTimeUnit();
-				if (o21 == null) {
-					width = defX;
-					graph.drawRect(x, y, width, y);
-					graph.drawString(clock + "", x, y + defY + 15);
-					clock += 1;
-					x += width;
-				}
-			}
-			int previousID = o21.getID(), currTime = 0;
-			do {
-				if (o21 == null) {
-					if (previousID != -1) {
-						width = currTime * defX;
-						graph.drawRect(x, y, width, y);
-						graph.drawString(clock + "", x, y + defY + 15);
-						clock += currTime;
-						x += width;
-						graph.drawString("P" + previousID, x - (currTime / 2.f) * defX, 1.5f * y);
+            getContentPane().setBackground(Color.WHITE);
+            setSize(480, 200);
+            setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            setLocationRelativeTo(null);
 
-					}
+        }
 
-					width = defX;
-					graph.drawRect(x, y, width, y);
-					graph.drawString(clock + "", x, y + defY + 15);
-					clock += 1;
-					x += width;
-					previousID = -1;
-				} else if (o21 != null && o21.getID() == previousID)
-					currTime++;
-				else if (o21 != null && o21.getID() != previousID && previousID != -1) {
-					width = currTime * defX;
-					graph.drawRect(x, y, width, y);
-					graph.drawString(clock + "", x, y + defY + 15);
-					clock += currTime;
-					x += width;
-					graph.drawString("P" + previousID, x - (currTime / 2.f) * defX, 1.5f * y);
-					currTime = 1;
-					previousID = o21.getID();
-				}
-				o21 = queue.consumeTimeUnit();
-			} while (!queue.isEmpty());
-			graph.drawString(clock + "", x, y + defY + 15);
-			width = o21.getExecutionTime() * defX;
-			graph.drawRect(x, y, width, y);
-			graph.drawString(clock + "", x, y + defY + 15);
-			clock += o21.getExecutionTime();
-			x += width;
-			graph.drawString("P" + o21.getID(), x - (currTime / 2.f) * defX, 1.5f * y);
-			graph.drawString(clock + "", x, y + defY + 15);
-		}
+        private void drawRectangles(Graphics g) {
+            int width, x = defX, y = defY, clock = 0;
+            graph = (Graphics2D) g;
+            graph.setColor(Color.WHITE);
+            graph.fillRect(0, 0, 500, 500);
+            graph.setFont(new Font("TimesRoman", Font.BOLD, 12));
+            graph.setColor(Color.BLACK);
+            Operation o21 = null;
+            while (!queue.isEmpty() && o21 == null) {
+                o21 = queue.consumeTimeUnit();
+                if (o21 == null) {
+                    width = defX;
+                    graph.drawRect(x, y, width, y);
+                    graph.drawString(clock + "", x, y + defY + 15);
+                    clock += 1;
+                    x += width;
+                }
 
-		public void paint(Graphics g) {
-			super.paint(g);
-			drawRectangles(g);
-		}
+            }
+            int previousID = o21.getID(), currTime = 1;
 
-	}
+            while (!queue.isEmpty()) {
+                o21 = queue.consumeTimeUnit();
+                if (o21 == null) {
+                    if (previousID != -1) {
+                        width = currTime * defX;
+                        graph.drawRect(x, y, width, y);
+                        graph.drawString(clock + "", x, y + defY + 15);
+                        clock += currTime;
+                        x += width;
+                        graph.drawString("P" + previousID, x - (currTime / 2.f) * defX, 1.5f * y);
 
+                    }
+
+                    width = defX;
+                    graph.drawRect(x, y, width, y);
+                    graph.drawString(clock + "", x, y + defY + 15);
+                    clock += 1;
+                    x += width;
+                    previousID = -1;
+                } else if (o21 != null && o21.getID() == previousID) {
+                    currTime++;
+                } else if (o21 != null && o21.getID() != previousID && previousID != -1) {
+                    width = currTime * defX;
+                    graph.drawRect(x, y, width, y);
+                    graph.drawString(clock + "", x, y + defY + 15);
+                    clock += currTime;
+                    x += width;
+                    graph.drawString("P" + previousID, x - (currTime / 2.f) * defX, 1.5f * y);
+                    currTime = 1;
+                    previousID = o21.getID();
+                }
+
+            }
+
+            graph.drawString(clock + "", x, y + defY + 15);
+            width = o21.getExecutionTime() * defX;
+            graph.drawRect(x, y, width, y);
+            graph.drawString(clock + "", x, y + defY + 15);
+            clock += o21.getExecutionTime();
+            x += width;
+            graph.drawString("P" + o21.getID(), x - (currTime / 2.f) * defX, 1.5f * y);
+            graph.drawString(clock + "", x, y + defY + 15);
+        }
+
+        public void paint(Graphics g) {
+            super.paint(g);
+            drawRectangles(g);
+        }
+
+    }
 }
