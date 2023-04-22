@@ -597,7 +597,9 @@ public class MainUI extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new MainUI().setVisible(true);
+                MainUI window = new MainUI();
+                window.setMinimumSize(new Dimension(1200,700));
+                window.setVisible(true);
             }
         });
     }
