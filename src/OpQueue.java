@@ -11,4 +11,7 @@ public interface OpQueue {
     public boolean isEmpty();
     // return Time
     public int getTimer();
+    	public void setTimer(int t);
+
+	public OpQueue clone() throws CloneNotSupportedException;
 }
