@@ -57,14 +57,12 @@
                               <EmptySpace max="-2" attributes="0"/>
                               <Component id="AVG_WT_box" pref="95" max="32767" attributes="0"/>
                           </Group>
-                          <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                              <Group type="102" attributes="0">
-                                  <Component id="jLabel1" pref="100" max="32767" attributes="0"/>
-                                  <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                                  <Component id="quantomBox" min="-2" pref="98" max="-2" attributes="0"/>
-                              </Group>
-                              <Component id="clearButton" max="32767" attributes="0"/>
+                          <Group type="102" attributes="0">
+                              <Component id="jLabel1" pref="100" max="32767" attributes="0"/>
+                              <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                              <Component id="quantomBox" min="-2" pref="98" max="-2" attributes="0"/>
                           </Group>
+                          <Component id="clearButton" max="32767" attributes="0"/>
                       </Group>
                       <EmptySpace max="32767" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
@@ -103,12 +101,14 @@
                   <Group type="102" attributes="0">
                       <Component id="jPanel1" max="32767" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="3" attributes="0">
-                          <Component id="jLabel2" alignment="3" min="-2" pref="45" max="-2" attributes="0"/>
-                          <Component id="AVG_TAT_box" alignment="3" min="-2" pref="45" max="-2" attributes="0"/>
-                          <Group type="103" alignment="3" groupAlignment="3" attributes="0">
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Group type="103" alignment="0" groupAlignment="3" attributes="0">
                               <Component id="jLabel3" alignment="3" min="-2" pref="45" max="-2" attributes="0"/>
                               <Component id="AVG_WT_box" alignment="3" min="-2" pref="45" max="-2" attributes="0"/>
+                          </Group>
+                          <Group type="103" groupAlignment="3" attributes="0">
+                              <Component id="jLabel2" alignment="3" min="-2" pref="45" max="-2" attributes="0"/>
+                              <Component id="AVG_TAT_box" alignment="3" min="-2" pref="45" max="-2" attributes="0"/>
                           </Group>
                       </Group>
                       <EmptySpace min="-2" pref="20" max="-2" attributes="0"/>
@@ -320,7 +320,7 @@
         <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
           <Font name="Dialog" size="14" style="0"/>
         </Property>
-        <Property name="text" type="java.lang.String" value="Quantom Time:"/>
+        <Property name="text" type="java.lang.String" value="Quantum Time:"/>
         <Property name="enabled" type="boolean" value="false"/>
       </Properties>
     </Component>
@@ -343,7 +343,7 @@
         </Property>
         <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
           <StringArray count="3">
-            <StringItem index="0" value="--Choose preemptivity"/>
+            <StringItem index="0" value="--Select preemptivity"/>
             <StringItem index="1" value="non-preemtive"/>
             <StringItem index="2" value="preemptive"/>
           </StringArray>
@@ -364,7 +364,7 @@
         </Property>
         <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
           <StringArray count="5">
-            <StringItem index="0" value="--Choose schedulning algorithm"/>
+            <StringItem index="0" value="--Select schedulning algorithm"/>
             <StringItem index="1" value="Priority queue"/>
             <StringItem index="2" value="FCFS"/>
             <StringItem index="3" value="Roundrobin"/>
