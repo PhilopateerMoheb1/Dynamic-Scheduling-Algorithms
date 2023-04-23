@@ -57,7 +57,31 @@ public class FCFSQ implements OpQueue{
 
     // Class for Comparator to set Priority Queue to sort the new items
 
+public void setTimer(int t)
+	{ 
+		Timer = t ;
+	}
+	// Class for Comparator to set Priority Queue to sort the new items
 
+	public OpQueue clone() throws CloneNotSupportedException {
+		FCFSQ temp = new FCFSQ();
+		Iterator it = q.iterator();
+		while(it.hasNext())
+		{
+			Operation o = (Operation)(it.next()) ;
+			
+			temp.q.add(o.clone());
+			System.out.println(o== o.clone());
+		}
+		it = allProcess.iterator();
+		while(it.hasNext())
+		{
+			Operation o = (Operation)(it.next()) ;
+			temp.allProcess.add(o.clone());
+		}
+		temp.setTimer(Timer);
+		return temp;
+	}
 
     public static void main(String[] args) {
         FCFSQ q = new FCFSQ();
