@@ -16,7 +16,7 @@ public class InstantSimulation implements Simulation {
 
 	private OpQueue queue;
 	private Graphics2D graph;
-	public static final int defX = 25;
+	public static final int defX = 30;
 	public static final int defY = 50;
 	private int totalSimulationTime;
 
@@ -27,7 +27,8 @@ public class InstantSimulation implements Simulation {
 	@Override
 	public BufferedImage render() {
 		totalSimulationTime = countTimes();
-		BufferedImage image = new BufferedImage((totalSimulationTime) * defX, 400, BufferedImage.TYPE_INT_RGB);
+		BufferedImage image = new BufferedImage((totalSimulationTime+100) * defX , 400, BufferedImage.TYPE_INT_RGB);
+                System.out.println(totalSimulationTime);
 		graph = (Graphics2D) image.getGraphics();
 		RectanglesDrawing r = new RectanglesDrawing();
 		r.drawRectangles(graph);
@@ -68,7 +69,7 @@ public class InstantSimulation implements Simulation {
 			super("Rectangles Drawing Demo");
 
 			getContentPane().setBackground(Color.WHITE);
-			setSize(480, 200);
+			setSize((totalSimulationTime+100) * defX , 200);
 			setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 			setLocationRelativeTo(null);
 
@@ -80,7 +81,7 @@ public class InstantSimulation implements Simulation {
 			graph = (Graphics2D) g;
 			graph.setColor(Color.WHITE);
 			// ScrollPane sp = new ScrollPane(graph);
-			graph.fillRect(0, 0, totalSimulationTime * defX, 5000);
+			graph.fillRect(0, 0,(totalSimulationTime+100) * defX , 5000);
 			graph.setFont(new Font("TimesRoman", Font.BOLD, 12));
 			graph.setColor(Color.BLACK);
 			Operation o21 = null;
