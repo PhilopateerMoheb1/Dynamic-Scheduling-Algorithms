@@ -75,6 +75,36 @@ public class PriorityQ implements OpQueue
 
     @Override
     public int getTimer() { return Timer; }
+	@Override
+	public void setTimer(int t) {
+		Timer = t;
+
+	}
+
+	@Override
+	public OpQueue clone() throws CloneNotSupportedException {
+		PriorityQ tempQ = new PriorityQ();
+		Iterator it = readyQueue.iterator();
+		while (it.hasNext()) {
+			Operation o = (Operation) (it.next());
+
+			tempQ.readyQueue.add(o.clone());
+		}
+		it = allProcess.iterator();
+		while (it.hasNext()) {
+			Operation o = (Operation) (it.next());
+			tempQ.allProcess.add(o.clone());
+		}
+		it = this.temp.iterator();
+		while (it.hasNext()) {
+			Operation o = (Operation) (it.next());
+			tempQ.temp.add(o.clone());
+		}
+		if (servedProcess != null)
+			tempQ.servedProcess = servedProcess.clone();
+		tempQ.setTimer(Timer);
+		return tempQ;
+	}
 
     public static void main(String[] args) {
         
