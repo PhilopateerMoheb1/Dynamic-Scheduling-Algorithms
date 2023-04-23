@@ -74,7 +74,37 @@ public class SJFQ implements OpQueue{
 
     @Override
     public int getTimer() { return Timer; }
+	@Override
+	public OpQueue clone() throws CloneNotSupportedException {
+		SJFQ tempQ = new SJFQ();
+		Iterator it = q.iterator();
+		while (it.hasNext()) {
+			Operation o = (Operation) (it.next());
 
+			tempQ.q.add(o.clone());
+
+		}
+		it = allProcess.iterator();
+		while (it.hasNext()) {
+			Operation o = (Operation) (it.next());
+			tempQ.allProcess.add(o.clone());
+		}
+		it = this.temp.iterator();
+		while (it.hasNext()) {
+			Operation o = (Operation) (it.next());
+			tempQ.temp.add(o.clone());
+		}
+		if(servedProcess != null)
+			tempQ.servedProcess = servedProcess.clone();
+		tempQ.setTimer(Timer);
+		return tempQ;
+	}
+
+	@Override
+	public void setTimer(int t) {
+		Timer = t;
+
+	}
     public static void main(String[] args) {
 //        SJFQ q = new SJFQ();
 //        Operation o1 = new Operation(1,4,5);
