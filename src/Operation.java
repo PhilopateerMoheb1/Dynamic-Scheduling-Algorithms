@@ -85,7 +85,17 @@ public class Operation {
     public String toString(){
         return "id: " + this.id +", arrival: " + this.arrivalTime + ", exeTime: " + this.exeTime + ", time left: " + timeLeft;
     }
-
+        public void setTimeLeft(int val)
+    { 
+    	timeLeft = val ;
+    }
+ @Override
+    protected Operation clone() throws CloneNotSupportedException {
+    	Operation o = new Operation(id,arrivalTime,exeTime,priority);
+    	o.setResponseTime(responseTime);
+    	o.setTimeLeft(timeLeft);
+    	return o ;
+    }
     public static void main(String[] args) {
         Operation o = new Operation(1,1,32000);
         System.out.println(o);
