@@ -71,7 +71,7 @@ public void setTimer(int t)
 			Operation o = (Operation)(it.next()) ;
 			
 			temp.q.add(o.clone());
-			System.out.println(o== o.clone());
+			
 		}
 		it = allProcess.iterator();
 		while(it.hasNext())
