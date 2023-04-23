@@ -1,12 +1,10 @@
-package Simualtion;
+package processmanager;
 
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
-import java.util.Iterator;
-
 import javax.naming.OperationNotSupportedException;
 import javax.swing.JFrame;
 
@@ -18,6 +16,9 @@ public class InstantSimulation implements Simulation {
 
 	private OpQueue queue;
 	private Graphics2D graph;
+	public static final int defX = 25;
+	public static final int defY = 50;
+	private int totalSimulationTime;
 
 	public InstantSimulation(OpQueue queue) {
 		this.queue = queue;
@@ -25,13 +26,29 @@ public class InstantSimulation implements Simulation {
 
 	@Override
 	public BufferedImage render() {
-
-		BufferedImage image = new BufferedImage(420, 150, BufferedImage.TYPE_INT_RGB);
+		totalSimulationTime = countTimes();
+		BufferedImage image = new BufferedImage((totalSimulationTime) * defX, 400, BufferedImage.TYPE_INT_RGB);
 		graph = (Graphics2D) image.getGraphics();
 		RectanglesDrawing r = new RectanglesDrawing();
 		r.drawRectangles(graph);
-
 		return image;
+	}
+
+	private int countTimes() {
+		OpQueue temp = null;
+		try {
+			temp = queue.clone();
+		} catch (CloneNotSupportedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		while (!temp.isEmpty()) {
+			temp.consumeTimeUnit();
+
+		}
+
+		return temp.getTimer();
 	}
 
 	@Override
@@ -47,9 +64,6 @@ public class InstantSimulation implements Simulation {
 
 	private class RectanglesDrawing extends JFrame {
 
-		private static final int defX = 25;
-		private static final int defY = 50;
-
 		private RectanglesDrawing() {
 			super("Rectangles Drawing Demo");
 
@@ -62,9 +76,11 @@ public class InstantSimulation implements Simulation {
 
 		private void drawRectangles(Graphics g) {
 			int width, x = defX, y = defY, clock = 0;
+
 			graph = (Graphics2D) g;
 			graph.setColor(Color.WHITE);
-			graph.fillRect(0, 0, 500, 500);
+			// ScrollPane sp = new ScrollPane(graph);
+			graph.fillRect(0, 0, totalSimulationTime * defX, 5000);
 			graph.setFont(new Font("TimesRoman", Font.BOLD, 12));
 			graph.setColor(Color.BLACK);
 			Operation o21 = null;
