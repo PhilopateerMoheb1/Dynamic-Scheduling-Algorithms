@@ -8,8 +8,12 @@ public class Comparators {
         public int compare(Operation o1, Operation o2) {
             if (o1.getTimeLeft() < o2.getTimeLeft())
                 return -1;
-            else if (o1.getTimeLeft() == o2.getTimeLeft())
-                return 0;
+            else if (o1.getTimeLeft() == o2.getTimeLeft()) {
+                if (o1.getID() < o2.getID())
+                    return -1;
+                else
+                    return 1;
+            }
             else
                 return 1;
         }
@@ -21,8 +25,12 @@ public class Comparators {
         public int compare(Operation o1, Operation o2) {
             if (o1.getArrival() < o2.getArrival())
                 return -1;
-            else if (o1.getArrival() == o2.getArrival())
-                return 0;
+            else if (o1.getArrival() == o2.getArrival()) {
+                if (o1.getID() < o2.getID())
+                    return -1;
+                else
+                    return 1;
+            }
             else
                 return 1;
         }
