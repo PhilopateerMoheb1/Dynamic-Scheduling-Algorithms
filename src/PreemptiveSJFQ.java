@@ -1,3 +1,5 @@
+package processmanager;
+
 import java.util.Iterator;
 
 public class PreemptiveSJFQ extends SJFQ {
@@ -21,7 +23,7 @@ public class PreemptiveSJFQ extends SJFQ {
             // set its response time
             endOp.setResponseTime(Timer);
             // exchange the current process to be executing
-            servedProcess = q.peek();
+          servedProcess = q.peek();
             return endOp;
         }
         return servedProcess;
