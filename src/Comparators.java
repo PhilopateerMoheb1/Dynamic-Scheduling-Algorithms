@@ -54,7 +54,10 @@ public class Comparators {
             if (o1.getPriority() < o2.getPriority())
                 return -1;
             else if (o1.getPriority() == o2.getPriority())
-                return 0;
+                if (o1.getID() < o2.getID())
+                    return -1;
+                else
+                    return 1;
             else
                 return 1;
         }
