@@ -112,7 +112,7 @@ public class RoundRobin implements OpQueue
         }
 
 
-        Iterator i = queue.iterate();
+        Iterator<Operation> i = queue.iterate();
         Operation o1;
         while (i.hasNext()){
             o1 = (Operation)i.next();
