@@ -1,3 +1,4 @@
+package processmanager;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.PriorityQueue;
@@ -55,7 +56,7 @@ public class SJFQ implements OpQueue{
             // set process's response time
             endOp.setResponseTime(Timer);
             // exchange the process to be executed
-            servedProcess = q.peek();
+            servedProcess = null;
             // return finished process
             return endOp;
         }
