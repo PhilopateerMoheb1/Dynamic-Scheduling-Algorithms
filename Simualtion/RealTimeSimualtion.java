@@ -23,7 +23,7 @@ public class RealTimeSimualtion extends JPanel implements Simulation {
     private Graphics2D graph;
     private BufferedImage image; // Buffered image as consturctor
     private int previousID;
-    private RealTimeRectanglesDrawing r;
+    // private RealTimeRectanglesDrawing r;
     ArrayList<Rectangle> rectangles = new ArrayList<>();
     ArrayList<TextCoordinates> texStrings = new ArrayList<>();// to make string with coordinates
     private Operation o21;
@@ -37,6 +37,8 @@ public class RealTimeSimualtion extends JPanel implements Simulation {
     // constructor
     public RealTimeSimualtion(OpQueue queue) {
         image = new BufferedImage(5000, 150, BufferedImage.TYPE_INT_RGB);
+        graph = image.createGraphics();
+        graph.fillRect(0, 0, (4000 + 100) * defX, 5000);
         // r = new RealTimeRectanglesDrawing();
         // graph = image.createGraphics();
         rectangles = new ArrayList<>();
@@ -69,22 +71,24 @@ public class RealTimeSimualtion extends JPanel implements Simulation {
         o21 = queue.consumeTimeUnit();
         graph = image.createGraphics();
         graph.setFont(new Font("TimesRoman", Font.BOLD, 12));
-        graph.setColor(Color.white);
+        // graph.fillRect(0, 0, (4000 + 100) * defX, 5000);
+        graph.setColor(Color.black);
         if (o21 == null) {
             // width = defX;
-            Rectangle rectangle = new Rectangle(currX, currY, defX, defY);
+            Rectangle rectangle = new Rectangle(currX + 20, currY + 20, defX, defY);
             rectangles.add(rectangle);
-            TextCoordinates tCoordinates = new TextCoordinates(clock + "", new Point(currX, currY + defY + 15));
+            TextCoordinates tCoordinates = new TextCoordinates(clock + "", new Point(currX + 20, currY + defY + 40));
             texStrings.add(tCoordinates);
             clock++;
             currX += defX;
         } else if (o21 != null) {
-            Rectangle rectangle = new Rectangle(currX, currY, defX, defY);
+            Rectangle rectangle = new Rectangle(currX + 20, currY + 20, defX, defY);
             rectangles.add(rectangle);
-            TextCoordinates tCoordinates = new TextCoordinates(clock + "", new Point(currX, currY + defY + 15));
+            TextCoordinates tCoordinates = new TextCoordinates(clock + "", new Point(currX + 20, currY + defY + 40));
             texStrings.add(tCoordinates);
             clock++;
-            TextCoordinates tCoordinates1 = new TextCoordinates("P" + o21.getID(), new Point(currX + defX, 1 * currY));
+            TextCoordinates tCoordinates1 = new TextCoordinates("P" + o21.getID(),
+                    new Point((int) rectangle.getCenterX() - 5, (int) rectangle.getCenterY()));
             texStrings.add(tCoordinates1);
             currX += defX;
         }
@@ -100,68 +104,70 @@ public class RealTimeSimualtion extends JPanel implements Simulation {
     }
 
     @Override
-    public void paintComponent(Graphics g) {
+    synchronized public void paintComponent(Graphics g) {
         super.paintComponent(g);
         g.drawImage(image, 0, 0, null);
     }
 
-    public class RealTimeRectanglesDrawing extends JPanel {
+    // public class RealTimeRectanglesDrawing extends JPanel {
 
-        // Graphics g;
+    // // Graphics g;
 
-        // private RealTimeRectanglesDrawing() {
-        // super();
-        // getContentPane().setBackground(Color.black);
-        // setSize(480, 200);
-        // setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        // setLocationRelativeTo(null);
+    // // private RealTimeRectanglesDrawing() {
+    // // super();
+    // // getContentPane().setBackground(Color.black);
+    // // setSize(480, 200);
+    // // setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    // // setLocationRelativeTo(null);
 
-        // }
+    // // }
 
-        /*
-         * ---------------------------------------- P1 | P2 | P1| P4 |
-         * ----------------------------------------
-         */
-        private synchronized void drawRectangles(Graphics g, Operation o21, int clock) {
-            // int width, x = defX, y = defY;
-            graph = (Graphics2D) g;
-            graph.setFont(new Font("TimesRoman", Font.BOLD, 12));
-            graph.setColor(Color.white);
-            if (o21 == null) {
-                // width = defX;
-                graph.drawRect(currX, currY, defX, currY);
-                graph.drawString(clock + "", currX, currY + defY + 15);
-                clock += 1;
-                currX += defX;
-            } else if (o21 != null) {
-                graph.drawRect(currX, currY, defX, currY);
-                graph.drawString(clock + "", currX, currY + defY + 15);
-                clock++;
-                graph.drawString("P" + o21.getID(), currX + (1 / 2.f - 0.2f) * defX, 1.5f * currY);
-                graph.drawString(clock + "", currX, currY + defY + 15);
-                currX += defX;
-            }
-            // TimeUnit.SECONDS.sleep(1);
-            // o21 = q.consumeTimeUnit();
+    // /*
+    // * ---------------------------------------- P1 | P2 | P1| P4 |
+    // * ----------------------------------------
+    // */
+    // private synchronized void drawRectangles(Graphics g, Operation o21, int
+    // clock) {
+    // // int width, x = defX, y = defY;
+    // graph = (Graphics2D) g;
+    // graph.setFont(new Font("TimesRoman", Font.BOLD, 12));
+    // graph.setColor(Color.black);
+    // if (o21 == null) {
+    // // width = defX;
+    // graph.drawRect(currX, currY, defX, currY);
+    // graph.drawString(clock + "", currX, currY + defY + 15);
+    // clock += 1;
+    // currX += defX;
+    // } else if (o21 != null) {
+    // graph.drawRect(currX, currY, defX, currY);
+    // graph.drawString(clock + "", currX, currY + defY + 15);
+    // clock++;
+    // graph.drawString("P" + o21.getID(), currX + (1 / 2.f - 0.2f) * defX, 1.5f *
+    // currY);
+    // graph.drawString(clock + "", currX, currY + defY + 15);
+    // currX += defX;
+    // }
+    // // TimeUnit.SECONDS.sleep(1);
+    // // o21 = q.consumeTimeUnit();
 
-            // graph.drawString(clock + "", x, y + defY + 15);
-            // width = o21.getExecutionTime() * defX;
-            // graph.drawRect(x, y, width, y);
-            // graph.drawString(clock + "", x, y + defY + 15);
-            // clock += o21.getExecutionTime();
-            // x += width;
-            // graph.drawString("P" + o21.getID(), x - (currTime / 2.f) * defX, 1.5f *
-            // y);
-            // graph.drawString(clock + "", x, y + defY + 15);
-        }
-        // code to draw rectangles goes here...
+    // // graph.drawString(clock + "", x, y + defY + 15);
+    // // width = o21.getExecutionTime() * defX;
+    // // graph.drawRect(x, y, width, y);
+    // // graph.drawString(clock + "", x, y + defY + 15);
+    // // clock += o21.getExecutionTime();
+    // // x += width;
+    // // graph.drawString("P" + o21.getID(), x - (currTime / 2.f) * defX, 1.5f *
+    // // y);
+    // // graph.drawString(clock + "", x, y + defY + 15);
+    // }
+    // // code to draw rectangles goes here...
 
-        public synchronized void paint(Graphics g) {
-            super.paint(g);
-            drawRectangles(g, o21, clock);
-        }
+    // public synchronized void paint(Graphics g) {
+    // super.paint(g);
+    // drawRectangles(g, o21, clock);
+    // }
 
-    }
+    // }
 
     public static void main(String[] args) {
         FCFSQ q = new FCFSQ();
