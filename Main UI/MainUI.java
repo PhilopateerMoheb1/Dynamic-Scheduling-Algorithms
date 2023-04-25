@@ -5,6 +5,7 @@
 package processmanager;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.text.DecimalFormat;
@@ -14,8 +15,11 @@ import java.util.logging.Logger;
 import javax.naming.OperationNotSupportedException;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.JTableHeader;
 import javax.swing.table.TableColumn;
 
 /**
@@ -43,6 +47,8 @@ public class MainUI extends javax.swing.JFrame {
 
     private BufferedImage img;
     private int shift;
+    private boolean RTS_mode = false;
+    private Thread RTThread;
 
     /**
      * Creates new form MainUI
@@ -50,6 +56,7 @@ public class MainUI extends javax.swing.JFrame {
     public MainUI() {
         initComponents();
         inputTable.removeColumn(inputTable.getColumnModel().getColumn(3));
+
     }
 
     /**
@@ -85,7 +92,8 @@ public class MainUI extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Process scheduler");
-        setMinimumSize(new java.awt.Dimension(1200, 741));
+        setMinimumSize(new java.awt.Dimension(1118, 741));
+        setSize(new java.awt.Dimension(1118, 741));
 
         inputTable.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
         inputTable.setModel(new javax.swing.table.DefaultTableModel(
@@ -93,7 +101,7 @@ public class MainUI extends javax.swing.JFrame {
                 { new Short((short) 1), null, null, null, null, null, null, null}
             },
             new String [] {
-                "ID", "Execution time", "Arrival time", "Priority", "Turn-around time", "Waiting time", "Response time", "Departure time"
+                "ID", "Burst time", "Arrival time", "Priority", "Turn-around time", "Waiting time", "Response time", "Departure time"
             }
         ) {
             Class[] types = new Class [] {
@@ -114,6 +122,20 @@ public class MainUI extends javax.swing.JFrame {
         inputTable.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         inputTable.setRowHeight(25);
         inputTable.setSurrendersFocusOnKeystroke(true);
+        inputTable.addAncestorListener(new javax.swing.event.AncestorListener() {
+            public void ancestorAdded(javax.swing.event.AncestorEvent evt) {
+                inputTableAncestorAdded(evt);
+            }
+            public void ancestorMoved(javax.swing.event.AncestorEvent evt) {
+            }
+            public void ancestorRemoved(javax.swing.event.AncestorEvent evt) {
+            }
+        });
+        inputTable.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                inputTableFocusLost(evt);
+            }
+        });
         jScrollPane1.setViewportView(inputTable);
         inputTable.getAccessibleContext().setAccessibleDescription("");
 
@@ -202,7 +224,7 @@ public class MainUI extends javax.swing.JFrame {
         });
 
         queuePicker.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
-        queuePicker.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "--Select scheduling algorithm", "Priority queue", "FCFS", "Roundrobin", "SJF" }));
+        queuePicker.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "--Select scheduling algorithm", "Priority", "FCFS", "Round Robin", "SJF" }));
         queuePicker.setToolTipText("");
         queuePicker.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -259,9 +281,20 @@ public class MainUI extends javax.swing.JFrame {
         jLabel3.setText("AVG waiting time:");
 
         jSlider1.setValue(0);
+        jSlider1.setEnabled(false);
         jSlider1.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
             public void mouseDragged(java.awt.event.MouseEvent evt) {
                 jSlider1MouseDragged(evt);
+            }
+        });
+        jSlider1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                jSlider1MousePressed(evt);
+            }
+        });
+        jSlider1.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                jSlider1KeyPressed(evt);
             }
         });
 
@@ -274,7 +307,7 @@ public class MainUI extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 1133, Short.MAX_VALUE)
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 1068, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(addButton, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -302,7 +335,7 @@ public class MainUI extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
-                                .addGap(0, 78, Short.MAX_VALUE)
+                                .addGap(0, 0, Short.MAX_VALUE)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(stopButton, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addComponent(restartButton, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -330,14 +363,14 @@ public class MainUI extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(AVG_WT_box, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(AVG_TAT_box, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jSlider1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jSlider1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addGap(20, 20, 20)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -376,7 +409,7 @@ public class MainUI extends javax.swing.JFrame {
             inputTable.getCellEditor().stopCellEditing();
         }
         String scheduleTypeTxt = queuePicker.getSelectedItem().toString();
-        if (scheduleTypeTxt.equals("Roundrobin")) {
+        if (scheduleTypeTxt.equals("Round Robin")) {
             if (prioritzed) {
                 inputTable.removeColumn(inputTable.getColumnModel().getColumn(3));
                 prioritzed = false;
@@ -406,12 +439,17 @@ public class MainUI extends javax.swing.JFrame {
 
             return;
         }
-        if (scheduleTypeTxt.equals("Priority queue")) {
+        if (scheduleTypeTxt.equals("Priority")) {
             if (!prioritzed) {
                 inputTable.addColumn(new TableColumn(3));
                 inputTable.getColumnModel().moveColumn(7, 3);
                 prioritzed = true;
             }
+            DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
+            centerRenderer.setHorizontalAlignment(JLabel.CENTER);
+
+            inputTable.getColumnModel().getColumn(3).setCellRenderer(centerRenderer);
+
             quantomBox.setEnabled(false);
             jLabel1.setEnabled(false);
             scheduleType = QueueTypes.PriorityQueue;
@@ -440,6 +478,50 @@ public class MainUI extends javax.swing.JFrame {
         }
 
     }//GEN-LAST:event_queuePickerActionPerformed
+    private void simulationStep(Simulation sim, OpQueue queue, DefaultTableModel model) throws OperationNotSupportedException {
+        sim.step();
+        updateData(sim,queue,model);
+    }
+    private void updateData(Simulation sim,OpQueue queue, DefaultTableModel model){
+        
+        img = sim.render();
+        repaintSimulation();
+        totalTAT = 0;
+        totalWT = 0;
+        queue.iterate().forEachRemaining((t) -> {
+
+            int id = t.getID();
+            int tat = t.getTATime();
+            int wt = t.getWaiting();
+            int dt = t.getResponseTime();
+            int et = t.getExecutionTime();
+
+            if (tat >= 0) {
+                model.setValueAt(tat, id - 1, 4);
+                totalTAT += tat;
+            }else{
+                totalTAT = Integer.MIN_VALUE;
+            }
+            if (wt >= 0) {
+                model.setValueAt(wt, id - 1, 5);
+                totalWT += wt;
+            }else{
+                totalWT = Integer.MIN_VALUE;
+            }
+            if (dt != Integer.MAX_VALUE) {
+                model.setValueAt(dt-et, id - 1, 6);
+                model.setValueAt(dt, id - 1, 7);
+            }
+            
+            
+
+        });
+
+        if (totalTAT >= 0)AVG_TAT_box.setText(df.format((float) totalTAT / inputTable.getRowCount()));
+        if (totalWT >= 0)AVG_WT_box.setText(df.format((float) totalWT / inputTable.getRowCount()));
+
+    }
+
     private void prepareSimulation(boolean instant) {
         if (inputTable.isEditing()) {
             inputTable.getCellEditor().stopCellEditing();
@@ -491,91 +573,54 @@ public class MainUI extends javax.swing.JFrame {
         }
 
         Simulation sim = Simulation.getInstance(queue, instant);
-        img = sim.render();
-        repaintSimulation();
-        totalTAT = 0;
-        totalWT = 0;
-        queue.iterate().forEachRemaining((t) -> {
-
-            int id = t.getID();
-            int tat = t.getTATime();
-            int wt = t.getWaiting();
-            int rt = t.getResponseTime();
-            model.setValueAt(tat, id - 1, 4);
-            model.setValueAt(wt, id - 1, 5);
-            model.setValueAt(rt - t.getExecutionTime(), id - 1, 6);
-            model.setValueAt(rt, id - 1, 7);
-            totalTAT += tat;
-            totalWT += wt;
-
-        });
-
-        AVG_TAT_box.setText(df.format((float) totalTAT / inputTable.getRowCount()));
-        AVG_WT_box.setText(df.format((float) totalWT / inputTable.getRowCount()));
+        jSlider1.setEnabled(true);
+        updateData(sim,queue,model);
         if (!instant) {
-            Thread RTThread = new Thread(() -> {
+            RTThread = new Thread(() -> {
                 while (true) {
 
                     try {
                         for (int i = 0; i < 10; i++) {
                             if (stopClicked) {
-                                stepClicked = false;
+                                stopClicked = false;
                                 return;
                             }
                             if (restartClicked) {
-                                prepareSimulation(false);
+                                restartClicked = false;
                                 return;
                             }
                             Thread.sleep(100);
                         }
 
                         while (paused) {
+
                             if (stepClicked) {
-                                sim.step();
                                 stepClicked = false;
+                                simulationStep(sim, queue, model);
+
                             }
                             if (stopClicked) {
-                                stepClicked = false;
+                                stopClicked = false;
+                                play();
                                 return;
                             }
                             if (restartClicked) {
-                                prepareSimulation(false);
                                 restartClicked = false;
+                                play();
                                 return;
                             }
-
+                            Thread.sleep(100);//to solve bug of thread blocking main thread 
                         }
-                        sim.step();
+                        simulationStep(sim, queue, model);
                     } catch (OperationNotSupportedException | InterruptedException ex) {
                         Logger.getLogger(MainUI.class.getName()).log(Level.SEVERE, null, ex);
                     }
 
-                    img = sim.render();
-                    repaintSimulation();
-                    totalTAT = 0;
-                    totalWT = 0;
-                    queue.iterate().forEachRemaining((t) -> {
-
-                        int id = t.getID();
-                        int tat = t.getTATime();
-                        int wt = t.getWaiting();
-                        int rt = t.getResponseTime();
-                        model.setValueAt(tat, id - 1, 4);
-                        model.setValueAt(wt, id - 1, 5);
-                        model.setValueAt(rt - t.getExecutionTime(), id - 1, 6);
-                        model.setValueAt(rt, id - 1, 7);
-                        totalTAT += tat;
-                        totalWT += wt;
-
-                    });
-
-                    AVG_TAT_box.setText(df.format((float) totalTAT / inputTable.getRowCount()));
-                    AVG_WT_box.setText(df.format((float) totalWT / inputTable.getRowCount()));
                 }
 
             });
             RTThread.start();
-            paused = false;
+            play();
             pauseButton.setEnabled(true);
             stopButton.setEnabled(true);
             restartButton.setEnabled(true);
@@ -586,6 +631,8 @@ public class MainUI extends javax.swing.JFrame {
             jLabel1.setEnabled(false);
             inputTable.setEnabled(false);
             ISButton.setEnabled(false);
+            RTSButton.setEnabled(false);
+            removeButton.setEnabled(true);
         }
     }
     private void ISButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ISButtonActionPerformed
@@ -594,27 +641,38 @@ public class MainUI extends javax.swing.JFrame {
 
     private void RTSButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_RTSButtonActionPerformed
         prepareSimulation(false);
+        RTS_mode = true;
     }//GEN-LAST:event_RTSButtonActionPerformed
-
-    private void pauseButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pauseButtonActionPerformed
-        if (paused) {
-            paused = false;
-            pauseButton.setIcon(new ImageIcon("src/processmanager/icons8-pause-80.png"));
-            stepButton.setEnabled(false);
-            inputTable.setEnabled(false);
-            return;
-        }
+    private void pause() {
 
         paused = true;
         pauseButton.setIcon(new ImageIcon("src/processmanager/icons8-play-80.png"));
         stepButton.setEnabled(true);
-        inputTable.setEnabled(true);
 
+    }
 
+    private void play() {
+
+        paused = false;
+        pauseButton.setIcon(new ImageIcon("src/processmanager/icons8-pause-80.png"));
+        stepButton.setEnabled(false);
+
+    }
+    private void pauseButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pauseButtonActionPerformed
+        if (paused)
+            play();
+        else
+            pause();
     }//GEN-LAST:event_pauseButtonActionPerformed
 
     private void restartButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_restartButtonActionPerformed
         restartClicked = true;
+        try {
+            RTThread.join();
+        } catch (InterruptedException ex) {
+            Logger.getLogger(MainUI.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        prepareSimulation(false);
     }//GEN-LAST:event_restartButtonActionPerformed
 
     private void stepButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_stepButtonActionPerformed
@@ -622,15 +680,24 @@ public class MainUI extends javax.swing.JFrame {
     }//GEN-LAST:event_stepButtonActionPerformed
 
     private void stopButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_stopButtonActionPerformed
+        RTS_mode = false;
         stopClicked = true;
+        try {
+            RTThread.join();
+        } catch (InterruptedException ex) {
+            Logger.getLogger(MainUI.class.getName()).log(Level.SEVERE, null, ex);
+        }
         pauseButton.setEnabled(false);
+        stepButton.setEnabled(false);
         stopButton.setEnabled(false);
         restartButton.setEnabled(false);
         clearButton.setEnabled(true);
-        preemtivityPicker.setEnabled(true);
+        if (scheduleType == QueueTypes.PriorityQueue||scheduleType == QueueTypes.SJF)preemtivityPicker.setEnabled(true);
         queuePicker.setEnabled(true);
         inputTable.setEnabled(true);
         ISButton.setEnabled(true);
+        RTSButton.setEnabled(true);
+        removeButton.setEnabled(true);
         if (scheduleType == QueueTypes.Roundrobin) {
             quantomBox.setEnabled(false);
             jLabel1.setEnabled(false);
@@ -655,7 +722,7 @@ public class MainUI extends javax.swing.JFrame {
     }//GEN-LAST:event_preemtivityPickerActionPerformed
 
     private void removeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removeButtonActionPerformed
-        // TODO add your handling code here:
+        newSim();
         int rowcnt = inputTable.getRowCount();
 
         DefaultTableModel model = (DefaultTableModel) this.inputTable.getModel();
@@ -682,19 +749,30 @@ public class MainUI extends javax.swing.JFrame {
 
         }
     }//GEN-LAST:event_removeButtonActionPerformed
-
+    private void newSim() {
+        jPanel1.updateUI();
+        img = null;
+        jSlider1.setEnabled(false);
+        AVG_TAT_box.setText("");
+        AVG_WT_box.setText("");
+    }
     private void clearButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_clearButtonActionPerformed
         DefaultTableModel model = (DefaultTableModel) this.inputTable.getModel();
         model.setNumRows(0);
-        jPanel1.updateUI();
-        AVG_TAT_box.setText("");
-        AVG_WT_box.setText("");
+        newSim();
         model.addRow(new String[]{"1", null, null, null, null, null, null, null, null});
         removeButton.setEnabled(false);
     }//GEN-LAST:event_clearButtonActionPerformed
 
     private void addButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addButtonActionPerformed
-        // TODO add your handling code here:
+        if (RTS_mode) {
+            if (!paused) {
+                pause();
+                //op adding code
+                return;
+            }
+        }
+        newSim();
         int rowcnt = inputTable.getRowCount();
 
         DefaultTableModel model = (DefaultTableModel) inputTable.getModel();
@@ -706,7 +784,7 @@ public class MainUI extends javax.swing.JFrame {
 
     private void repaintSimulation() {
         Graphics graph = jPanel1.getGraphics();
-        
+
         graph.drawImage(img, -shift, 0, null);
         graph.dispose();
     }
@@ -719,11 +797,43 @@ public class MainUI extends javax.swing.JFrame {
         repaintSimulation();
     }//GEN-LAST:event_jPanel1AncestorMoved
 
+    private void sliderEvent() {
+        if (jSlider1.isEnabled()) {
+            shift = ((jSlider1.getValue()) * (img.getWidth())) / jSlider1.getMaximum();
+            repaintSimulation();
+        }
+    }
+
     private void jSlider1MouseDragged(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jSlider1MouseDragged
-        shift = ((jSlider1.getValue())*(img.getWidth()))/jSlider1.getMaximum();
-        repaintSimulation();
-        
+        sliderEvent();
     }//GEN-LAST:event_jSlider1MouseDragged
+
+    private void jSlider1KeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jSlider1KeyPressed
+        sliderEvent();
+    }//GEN-LAST:event_jSlider1KeyPressed
+
+    private void jSlider1MousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jSlider1MousePressed
+        sliderEvent();
+    }//GEN-LAST:event_jSlider1MousePressed
+
+    private void inputTableAncestorAdded(javax.swing.event.AncestorEvent evt) {//GEN-FIRST:event_inputTableAncestorAdded
+        DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
+        centerRenderer.setHorizontalAlignment(JLabel.CENTER);
+
+        for (int columnIndex = 0; columnIndex < inputTable.getModel().getColumnCount() - 1; columnIndex++) {
+
+            inputTable.getColumnModel().getColumn(columnIndex).setCellRenderer(centerRenderer);
+
+        }
+        DefaultTableCellRenderer renderer = (DefaultTableCellRenderer) inputTable.getTableHeader().getDefaultRenderer();
+        renderer.setHorizontalAlignment(0);
+        inputTable.getTableHeader().setFont(new Font("SansSerif", Font.PLAIN, 14));
+        inputTable.getTableHeader().setReorderingAllowed(false);
+    }//GEN-LAST:event_inputTableAncestorAdded
+
+    private void inputTableFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_inputTableFocusLost
+        newSim();
+    }//GEN-LAST:event_inputTableFocusLost
 
     /**
      * @param args the command line arguments
