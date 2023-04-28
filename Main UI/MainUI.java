@@ -6,8 +6,10 @@ package processmanager;
 
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.Frame;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
+import static java.lang.Thread.sleep;
 import java.text.DecimalFormat;
 import java.util.Arrays;
 import java.util.logging.Level;
@@ -38,7 +40,6 @@ public class MainUI extends javax.swing.JFrame {
     private boolean preemptive = false;
 
     private boolean paused;
-    private boolean stepClicked = false;
     private boolean stopClicked = false;
     private boolean restartClicked = false;
 
@@ -49,6 +50,10 @@ public class MainUI extends javax.swing.JFrame {
     private int shift;
     private boolean RTS_mode = false;
     private Thread RTThread;
+    private int untouchableRows = 0;
+
+    private Simulation sim;
+    private OpQueue queue;
 
     /**
      * Creates new form MainUI
@@ -70,7 +75,7 @@ public class MainUI extends javax.swing.JFrame {
 
         jScrollPane1 = new javax.swing.JScrollPane();
         inputTable = new javax.swing.JTable();
-        jPanel1 = new javax.swing.JPanel();
+        jPanel1 = new RepaintingPanel();
         RTSButton = new javax.swing.JButton();
         stepButton = new javax.swing.JButton();
         addButton = new javax.swing.JButton();
@@ -94,6 +99,11 @@ public class MainUI extends javax.swing.JFrame {
         setTitle("Process scheduler");
         setMinimumSize(new java.awt.Dimension(1118, 741));
         setSize(new java.awt.Dimension(1118, 741));
+        addWindowStateListener(new java.awt.event.WindowStateListener() {
+            public void windowStateChanged(java.awt.event.WindowEvent evt) {
+                formWindowStateChanged(evt);
+            }
+        });
 
         inputTable.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
         inputTable.setModel(new javax.swing.table.DefaultTableModel(
@@ -141,22 +151,6 @@ public class MainUI extends javax.swing.JFrame {
 
         jPanel1.setBackground(new java.awt.Color(255, 255, 255));
         jPanel1.setForeground(new java.awt.Color(0, 0, 0));
-        jPanel1.addAncestorListener(new javax.swing.event.AncestorListener() {
-            public void ancestorAdded(javax.swing.event.AncestorEvent evt) {
-            }
-            public void ancestorMoved(javax.swing.event.AncestorEvent evt) {
-                jPanel1AncestorMoved(evt);
-            }
-            public void ancestorRemoved(javax.swing.event.AncestorEvent evt) {
-            }
-        });
-        jPanel1.addHierarchyBoundsListener(new java.awt.event.HierarchyBoundsListener() {
-            public void ancestorMoved(java.awt.event.HierarchyEvent evt) {
-            }
-            public void ancestorResized(java.awt.event.HierarchyEvent evt) {
-                jPanel1AncestorResized(evt);
-            }
-        });
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -280,7 +274,8 @@ public class MainUI extends javax.swing.JFrame {
         jLabel3.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
         jLabel3.setText("AVG waiting time:");
 
-        jSlider1.setValue(0);
+        jSlider1.setMaximum(10000);
+        jSlider1.setValue(10000);
         jSlider1.setEnabled(false);
         jSlider1.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
             public void mouseDragged(java.awt.event.MouseEvent evt) {
@@ -408,6 +403,9 @@ public class MainUI extends javax.swing.JFrame {
         if (inputTable.isEditing()) {
             inputTable.getCellEditor().stopCellEditing();
         }
+        if (inputTable.isEditing()) {
+            inputTable.getCellEditor().stopCellEditing();
+        }
         String scheduleTypeTxt = queuePicker.getSelectedItem().toString();
         if (scheduleTypeTxt.equals("Round Robin")) {
             if (prioritzed) {
@@ -478,12 +476,34 @@ public class MainUI extends javax.swing.JFrame {
         }
 
     }//GEN-LAST:event_queuePickerActionPerformed
-    private void simulationStep(Simulation sim, OpQueue queue, DefaultTableModel model) throws OperationNotSupportedException {
-        sim.step();
-        updateData(sim,queue,model);
+    private boolean addToQueue(int beg) {
+        DefaultTableModel model = (DefaultTableModel) inputTable.getModel();
+        for (int i = beg; i < model.getRowCount(); i++) {
+            Operation op;
+            try {
+                if (prioritzed) {
+                    op = new Operation(i + 1, Integer.parseInt(model.getValueAt(i, 2).toString()), Integer.parseInt(model.getValueAt(i, 1).toString()), Integer.parseInt(model.getValueAt(i, 3).toString()));
+                } else {
+                    op = new Operation(i + 1, Integer.parseInt(model.getValueAt(i, 2).toString()), Integer.parseInt(model.getValueAt(i, 1).toString()));
+                }
+                queue.enqueue(op);
+
+            } catch (IllegalArgumentException | NullPointerException e) {
+                JOptionPane.showMessageDialog(new JFrame(), "one or more cells are empty or not excpected at line " + (i + 1), "ERROR", JOptionPane.ERROR_MESSAGE);
+
+                return false;
+            }
+        }
+        return true;
     }
-    private void updateData(Simulation sim,OpQueue queue, DefaultTableModel model){
-        
+
+    private void simulationStep() throws OperationNotSupportedException {
+        sim.step();
+        updateData();
+    }
+
+    private void updateData() {
+        DefaultTableModel model = (DefaultTableModel) inputTable.getModel();
         img = sim.render();
         repaintSimulation();
         totalTAT = 0;
@@ -499,35 +519,46 @@ public class MainUI extends javax.swing.JFrame {
             if (tat >= 0) {
                 model.setValueAt(tat, id - 1, 4);
                 totalTAT += tat;
-            }else{
+            } else {
                 totalTAT = Integer.MIN_VALUE;
             }
             if (wt >= 0) {
                 model.setValueAt(wt, id - 1, 5);
                 totalWT += wt;
-            }else{
+            } else {
                 totalWT = Integer.MIN_VALUE;
             }
             if (dt != Integer.MAX_VALUE) {
-                model.setValueAt(dt-et, id - 1, 6);
+                model.setValueAt(dt - et, id - 1, 6);
                 model.setValueAt(dt, id - 1, 7);
             }
-            
-            
 
         });
 
-        if (totalTAT >= 0)AVG_TAT_box.setText(df.format((float) totalTAT / inputTable.getRowCount()));
-        if (totalWT >= 0)AVG_WT_box.setText(df.format((float) totalWT / inputTable.getRowCount()));
+        if (totalTAT >= 0) {
+            AVG_TAT_box.setText(df.format((float) totalTAT / inputTable.getRowCount()));
+        }
+        if (totalWT >= 0) {
+            AVG_WT_box.setText(df.format((float) totalWT / inputTable.getRowCount()));
+        }
 
+        try {
+            sliderEvent();
+        } catch (NullPointerException e) {
+        }
     }
 
     private void prepareSimulation(boolean instant) {
+
         if (inputTable.isEditing()) {
             inputTable.getCellEditor().stopCellEditing();
         }
-        DefaultTableModel model = (DefaultTableModel) this.inputTable.getModel();
-        OpQueue queue;
+        if (inputTable.isEditing()) {
+            JOptionPane.showMessageDialog(new JFrame(), "please make sure to insert valid data!", "ERROR", JOptionPane.ERROR_MESSAGE);
+
+            return;
+        }
+
         switch (scheduleType) {
             case FCFS -> {
                 queue = new FCFSQ();
@@ -555,26 +586,14 @@ public class MainUI extends javax.swing.JFrame {
             }
         }
 
-        for (int i = 0; i < model.getRowCount(); i++) {
-            Operation op;
-            try {
-                if (prioritzed) {
-                    op = new Operation(i + 1, Integer.parseInt(model.getValueAt(i, 2).toString()), Integer.parseInt(model.getValueAt(i, 1).toString()), Integer.parseInt(model.getValueAt(i, 3).toString()));
-                } else {
-                    op = new Operation(i + 1, Integer.parseInt(model.getValueAt(i, 2).toString()), Integer.parseInt(model.getValueAt(i, 1).toString()));
-                }
-                queue.enqueue(op);
-
-            } catch (IllegalArgumentException | NullPointerException e) {
-                JOptionPane.showMessageDialog(new JFrame(), "one or more cells are empty or not excpected at line " + (i + 1), "ERROR", JOptionPane.ERROR_MESSAGE);
-
-                return;
-            }
+        if (!addToQueue(0)) {
+            return;
         }
 
-        Simulation sim = Simulation.getInstance(queue, instant);
+        sim = Simulation.getInstance(queue, instant);
         jSlider1.setEnabled(true);
-        updateData(sim,queue,model);
+        updateData();
+
         if (!instant) {
             RTThread = new Thread(() -> {
                 while (true) {
@@ -594,11 +613,6 @@ public class MainUI extends javax.swing.JFrame {
 
                         while (paused) {
 
-                            if (stepClicked) {
-                                stepClicked = false;
-                                simulationStep(sim, queue, model);
-
-                            }
                             if (stopClicked) {
                                 stopClicked = false;
                                 play();
@@ -611,7 +625,7 @@ public class MainUI extends javax.swing.JFrame {
                             }
                             Thread.sleep(100);//to solve bug of thread blocking main thread 
                         }
-                        simulationStep(sim, queue, model);
+                        simulationStep();
                     } catch (OperationNotSupportedException | InterruptedException ex) {
                         Logger.getLogger(MainUI.class.getName()).log(Level.SEVERE, null, ex);
                     }
@@ -632,7 +646,7 @@ public class MainUI extends javax.swing.JFrame {
             inputTable.setEnabled(false);
             ISButton.setEnabled(false);
             RTSButton.setEnabled(false);
-            removeButton.setEnabled(true);
+            removeButton.setEnabled(false);
         }
     }
     private void ISButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ISButtonActionPerformed
@@ -644,7 +658,8 @@ public class MainUI extends javax.swing.JFrame {
         RTS_mode = true;
     }//GEN-LAST:event_RTSButtonActionPerformed
     private void pause() {
-
+        untouchableRows = inputTable.getRowCount();
+        inputTable.setEnabled(true);
         paused = true;
         pauseButton.setIcon(new ImageIcon("src/processmanager/icons8-play-80.png"));
         stepButton.setEnabled(true);
@@ -659,13 +674,35 @@ public class MainUI extends javax.swing.JFrame {
 
     }
     private void pauseButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pauseButtonActionPerformed
-        if (paused)
+        if (inputTable.isEditing()) {
+            inputTable.getCellEditor().stopCellEditing();
+        }
+        if (inputTable.isEditing()) {
+            JOptionPane.showMessageDialog(new JFrame(), "please make sure to insert valid data!", "ERROR", JOptionPane.ERROR_MESSAGE);
+
+            return;
+        }
+        if (paused) {
+            if (!addToQueue(untouchableRows)) {
+                return;
+            }
+            untouchableRows = inputTable.getRowCount();
+            removeButton.setEnabled(false);
             play();
-        else
+
+        } else
             pause();
     }//GEN-LAST:event_pauseButtonActionPerformed
 
     private void restartButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_restartButtonActionPerformed
+        if (inputTable.isEditing()) {
+            inputTable.getCellEditor().stopCellEditing();
+        }
+        if (inputTable.isEditing()) {
+            JOptionPane.showMessageDialog(new JFrame(), "please make sure to insert valid data!", "ERROR", JOptionPane.ERROR_MESSAGE);
+
+            return;
+        }
         restartClicked = true;
         try {
             RTThread.join();
@@ -676,10 +713,34 @@ public class MainUI extends javax.swing.JFrame {
     }//GEN-LAST:event_restartButtonActionPerformed
 
     private void stepButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_stepButtonActionPerformed
-        stepClicked = true;
+        if (inputTable.isEditing()) {
+            inputTable.getCellEditor().stopCellEditing();
+        }
+        if (inputTable.isEditing()) {
+            JOptionPane.showMessageDialog(new JFrame(), "please make sure to insert valid data!", "ERROR", JOptionPane.ERROR_MESSAGE);
+
+            return;
+        }
+        try {
+            if (!addToQueue(untouchableRows)) {
+                return;
+            }
+            simulationStep();
+
+            removeButton.setEnabled(false);
+            untouchableRows = inputTable.getRowCount();
+        } catch (OperationNotSupportedException ex) {
+            Logger.getLogger(MainUI.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }//GEN-LAST:event_stepButtonActionPerformed
 
     private void stopButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_stopButtonActionPerformed
+        if (inputTable.isEditing()) {
+            inputTable.getCellEditor().stopCellEditing();
+        }
+        if (inputTable.isEditing()) {
+            inputTable.getCellEditor().stopCellEditing();
+        }
         RTS_mode = false;
         stopClicked = true;
         try {
@@ -692,7 +753,9 @@ public class MainUI extends javax.swing.JFrame {
         stopButton.setEnabled(false);
         restartButton.setEnabled(false);
         clearButton.setEnabled(true);
-        if (scheduleType == QueueTypes.PriorityQueue||scheduleType == QueueTypes.SJF)preemtivityPicker.setEnabled(true);
+        if (scheduleType == QueueTypes.PriorityQueue || scheduleType == QueueTypes.SJF) {
+            preemtivityPicker.setEnabled(true);
+        }
         queuePicker.setEnabled(true);
         inputTable.setEnabled(true);
         ISButton.setEnabled(true);
@@ -709,6 +772,9 @@ public class MainUI extends javax.swing.JFrame {
         if (inputTable.isEditing()) {
             inputTable.getCellEditor().stopCellEditing();
         }
+        if (inputTable.isEditing()) {
+            inputTable.getCellEditor().stopCellEditing();
+        }
         if (preemtivityPicker.getSelectedItem().toString().equals("--Select preemptivity")) {
             ISButton.setEnabled(false);
             RTSButton.setEnabled(false);
@@ -722,14 +788,31 @@ public class MainUI extends javax.swing.JFrame {
     }//GEN-LAST:event_preemtivityPickerActionPerformed
 
     private void removeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removeButtonActionPerformed
-        newSim();
-        int rowcnt = inputTable.getRowCount();
+        if (inputTable.isEditing()) {
+            inputTable.getCellEditor().stopCellEditing();
+        }
+        if (inputTable.isEditing()) {
+            JOptionPane.showMessageDialog(new JFrame(), "cannot delete entries while editing!", "ERROR", JOptionPane.ERROR_MESSAGE);
 
+            return;
+        }
         DefaultTableModel model = (DefaultTableModel) this.inputTable.getModel();
         int[] rows = inputTable.getSelectedRows();
         if (rows.length == 0) {
-            JOptionPane.showMessageDialog(new JFrame(), "select rows to be deleted", "Warning",
+            JOptionPane.showMessageDialog(new JFrame(), "select rows to be deleted!", "Warning",
                     JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        if (RTS_mode) {
+            for (int row : rows) {
+                if (row < untouchableRows) {
+                    JOptionPane.showMessageDialog(new JFrame(), "you cannot delete a running process!", "Warning",
+                            JOptionPane.WARNING_MESSAGE);
+                    return;
+                }
+            }
+        } else {
+            newSim();
         }
         for (int i = 0; i < rows.length; i++) {
             model.removeRow(rows[i] - i);
@@ -739,24 +822,33 @@ public class MainUI extends javax.swing.JFrame {
         for (int i = Arrays.stream(rows).min().getAsInt() + 1; i <= inputTable.getRowCount(); i++) {
             model.setValueAt(i, i - 1, 0);
         }
-        rowcnt = inputTable.getRowCount();
+        int rowcnt = inputTable.getRowCount();
         if (rowcnt < 1) {
             model.addRow(new String[]{Integer.toString(rowcnt + 1), null, null, null, null, null, null, null, null});
         }
 
-        if (rowcnt < 2) {
+        if (rowcnt < 2 || (RTS_mode && rowcnt <= untouchableRows)) {
             removeButton.setEnabled(false);
 
         }
+
     }//GEN-LAST:event_removeButtonActionPerformed
     private void newSim() {
-        jPanel1.updateUI();
         img = null;
+        ((RepaintingPanel) jPanel1).clear(jPanel1.getGraphics());
         jSlider1.setEnabled(false);
         AVG_TAT_box.setText("");
         AVG_WT_box.setText("");
     }
     private void clearButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_clearButtonActionPerformed
+        if (inputTable.isEditing()) {
+            inputTable.getCellEditor().stopCellEditing();
+        }
+        if (inputTable.isEditing()) {
+            JOptionPane.showMessageDialog(new JFrame(), "cannot delete entries while editing!", "ERROR", JOptionPane.ERROR_MESSAGE);
+
+            return;
+        }
         DefaultTableModel model = (DefaultTableModel) this.inputTable.getModel();
         model.setNumRows(0);
         newSim();
@@ -765,14 +857,17 @@ public class MainUI extends javax.swing.JFrame {
     }//GEN-LAST:event_clearButtonActionPerformed
 
     private void addButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addButtonActionPerformed
+        if (inputTable.isEditing()) {
+            inputTable.getCellEditor().stopCellEditing();
+        }
         if (RTS_mode) {
             if (!paused) {
                 pause();
-                //op adding code
-                return;
             }
+
+        } else {
+            newSim();
         }
-        newSim();
         int rowcnt = inputTable.getRowCount();
 
         DefaultTableModel model = (DefaultTableModel) inputTable.getModel();
@@ -783,23 +878,21 @@ public class MainUI extends javax.swing.JFrame {
     }//GEN-LAST:event_addButtonActionPerformed
 
     private void repaintSimulation() {
-        Graphics graph = jPanel1.getGraphics();
+//        Graphics graph = jPanel1.getGraphics();
+//
+//        graph.drawImage(img, -shift, 0, null);
+//          graph.dispose();
 
-        graph.drawImage(img, -shift, 0, null);
-        graph.dispose();
+        ((RepaintingPanel) jPanel1).setImage(img);
+
+        ((RepaintingPanel) jPanel1).setShift(shift);
+
+        jPanel1.repaint();
     }
 
-    private void jPanel1AncestorResized(java.awt.event.HierarchyEvent evt) {//GEN-FIRST:event_jPanel1AncestorResized
-        repaintSimulation();
-    }//GEN-LAST:event_jPanel1AncestorResized
-
-    private void jPanel1AncestorMoved(javax.swing.event.AncestorEvent evt) {//GEN-FIRST:event_jPanel1AncestorMoved
-        repaintSimulation();
-    }//GEN-LAST:event_jPanel1AncestorMoved
-
-    private void sliderEvent() {
+    private void sliderEvent() throws NullPointerException {
         if (jSlider1.isEnabled()) {
-            shift = ((jSlider1.getValue()) * (img.getWidth())) / jSlider1.getMaximum();
+            shift = ((jSlider1.getValue()) * (img.getWidth() - jPanel1.getWidth())) / jSlider1.getMaximum();
             repaintSimulation();
         }
     }
@@ -832,8 +925,22 @@ public class MainUI extends javax.swing.JFrame {
     }//GEN-LAST:event_inputTableAncestorAdded
 
     private void inputTableFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_inputTableFocusLost
-        newSim();
+        if (inputTable.isEditing()) {
+            if (!RTS_mode) {
+                newSim();
+                return;
+            }
+            if (inputTable.getEditingRow() < untouchableRows) {
+                inputTable.getCellEditor().stopCellEditing();
+            }
+        }
     }//GEN-LAST:event_inputTableFocusLost
+
+    private void formWindowStateChanged(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowStateChanged
+
+        repaintSimulation();
+
+    }//GEN-LAST:event_formWindowStateChanged
 
     /**
      * @param args the command line arguments
