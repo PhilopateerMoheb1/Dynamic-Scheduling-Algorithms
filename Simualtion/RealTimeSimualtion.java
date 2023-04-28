@@ -22,7 +22,7 @@ public class RealTimeSimualtion extends JPanel implements Simulation {
     private OpQueue queue;
     private Graphics2D graph;
     private BufferedImage image; // Buffered image as consturctor
-    private int previousID;
+    private int width = 1000;
     // private RealTimeRectanglesDrawing r;
     ArrayList<Rectangle> rectangles = new ArrayList<>();
     ArrayList<TextCoordinates> texStrings = new ArrayList<>();// to make string with coordinates
@@ -36,11 +36,9 @@ public class RealTimeSimualtion extends JPanel implements Simulation {
 
     // constructor
     public RealTimeSimualtion(OpQueue queue) {
-        image = new BufferedImage(5000, 150, BufferedImage.TYPE_INT_RGB);
-        graph = image.createGraphics();
-        graph.fillRect(0, 0, (4000 + 100) * defX, 5000);
-        // r = new RealTimeRectanglesDrawing();
+        // image = new BufferedImage(5000, 150, BufferedImage.TYPE_INT_RGB);
         // graph = image.createGraphics();
+        // graph.fillRect(0, 0, (4000 + 100) * defX, 5000);
         rectangles = new ArrayList<>();
         texStrings = new ArrayList<>();
         currX = defX;
@@ -49,14 +47,6 @@ public class RealTimeSimualtion extends JPanel implements Simulation {
     }
 
     public synchronized BufferedImage render() {
-        // if (image == null) {
-        // image = new BufferedImage(420, 150, BufferedImage.TYPE_INT_RGB);
-        // graph = (Graphics2D) image.createGraphics();
-        // r = new RealTimeRectanglesDrawing();
-        // }
-        // r.drawRectangles(graph);
-        // r = new RealTimeRectanglesDrawing();
-        // repaint();
         return image;
     }
 
@@ -68,8 +58,14 @@ public class RealTimeSimualtion extends JPanel implements Simulation {
     // steps only 1 time unit which is not supported in Instant Simulation
     @Override
     public synchronized void step() {
-        o21 = queue.consumeTimeUnit();
+        if (currX >= 1000) {
+            width += 100;
+        }
+        image = new BufferedImage(width, 150, BufferedImage.TYPE_INT_RGB);
         graph = image.createGraphics();
+        graph.fillRect(0, 0, (4000 + 100) * defX, 5000);
+        o21 = queue.consumeTimeUnit();
+        // graph = image.createGraphics();
         graph.setFont(new Font("TimesRoman", Font.BOLD, 12));
         // graph.fillRect(0, 0, (4000 + 100) * defX, 5000);
         graph.setColor(Color.black);
