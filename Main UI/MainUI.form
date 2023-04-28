@@ -15,6 +15,9 @@
     <SyntheticProperty name="formSizePolicy" type="int" value="1"/>
     <SyntheticProperty name="generateCenter" type="boolean" value="true"/>
   </SyntheticProperties>
+  <Events>
+    <EventHandler event="windowStateChanged" listener="java.awt.event.WindowStateListener" parameters="java.awt.event.WindowEvent" handler="formWindowStateChanged"/>
+  </Events>
   <AuxValues>
     <AuxValue name="FormSettings_autoResourcing" type="java.lang.Integer" value="0"/>
     <AuxValue name="FormSettings_autoSetComponentName" type="java.lang.Boolean" value="false"/>
@@ -260,10 +263,9 @@
           <Color blue="0" green="0" red="0" type="rgb"/>
         </Property>
       </Properties>
-      <Events>
-        <EventHandler event="ancestorMoved" listener="javax.swing.event.AncestorListener" parameters="javax.swing.event.AncestorEvent" handler="jPanel1AncestorMoved"/>
-        <EventHandler event="ancestorResized" listener="java.awt.event.HierarchyBoundsListener" parameters="java.awt.event.HierarchyEvent" handler="jPanel1AncestorResized"/>
-      </Events>
+      <AuxValues>
+        <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new RepaintingPanel();"/>
+      </AuxValues>
 
       <Layout>
         <DimensionLayout dim="0">
@@ -476,7 +478,8 @@
     </Component>
     <Component class="javax.swing.JSlider" name="jSlider1">
       <Properties>
-        <Property name="value" type="int" value="0"/>
+        <Property name="maximum" type="int" value="10000"/>
+        <Property name="value" type="int" value="10000"/>
         <Property name="enabled" type="boolean" value="false"/>
       </Properties>
       <Events>
