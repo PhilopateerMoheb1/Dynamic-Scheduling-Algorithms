@@ -178,7 +178,7 @@
               <Font name="Dialog" size="14" style="0"/>
             </Property>
             <Property name="model" type="javax.swing.table.TableModel" editor="org.netbeans.modules.form.editors2.TableModelEditor">
-              <Table columnCount="8" rowCount="1">
+              <Table columnCount="9" rowCount="1">
                 <Column editable="false" title="ID" type="java.lang.Short">
                   <Data value="1"/>
                 </Column>
@@ -189,6 +189,7 @@
                 <Column editable="false" title="Waiting time" type="java.lang.Short"/>
                 <Column editable="false" title="Response time" type="java.lang.Short"/>
                 <Column editable="false" title="Departure time" type="java.lang.Short"/>
+                <Column editable="false" title="Remaining BT" type="java.lang.Short"/>
               </Table>
             </Property>
             <Property name="columnModel" type="javax.swing.table.TableColumnModel" editor="org.netbeans.modules.form.editors2.TableColumnModelEditor">
@@ -480,7 +481,6 @@
       <Properties>
         <Property name="maximum" type="int" value="10000"/>
         <Property name="value" type="int" value="10000"/>
-        <Property name="enabled" type="boolean" value="false"/>
       </Properties>
       <Events>
         <EventHandler event="mouseDragged" listener="java.awt.event.MouseMotionListener" parameters="java.awt.event.MouseEvent" handler="jSlider1MouseDragged"/>
