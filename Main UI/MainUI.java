@@ -4,7 +4,6 @@
  */
 package processmanager;
 
-import java.awt.Color;
 import java.awt.Font;
 import java.awt.Frame;
 import java.awt.Graphics;
@@ -61,7 +60,6 @@ public class MainUI extends javax.swing.JFrame {
     public MainUI() {
         initComponents();
         inputTable.removeColumn(inputTable.getColumnModel().getColumn(3));
-
     }
 
     /**
@@ -108,17 +106,17 @@ public class MainUI extends javax.swing.JFrame {
         inputTable.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
         inputTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                { new Short((short) 1), null, null, null, null, null, null, null}
+                { new Short((short) 1), null, null, null, null, null, null, null, null}
             },
             new String [] {
-                "ID", "Burst time", "Arrival time", "Priority", "Turn-around time", "Waiting time", "Response time", "Departure time"
+                "ID", "Burst time", "Arrival time", "Priority", "Turn-around time", "Waiting time", "Response time", "Departure time", "Remaining BT"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.Short.class, java.lang.Short.class, java.lang.Short.class, java.lang.Short.class, java.lang.Short.class, java.lang.Short.class, java.lang.Short.class, java.lang.Short.class
+                java.lang.Short.class, java.lang.Short.class, java.lang.Short.class, java.lang.Short.class, java.lang.Short.class, java.lang.Short.class, java.lang.Short.class, java.lang.Short.class, java.lang.Short.class
             };
             boolean[] canEdit = new boolean [] {
-                false, true, true, true, false, false, false, false
+                false, true, true, true, false, false, false, false, false
             };
 
             public Class getColumnClass(int columnIndex) {
@@ -276,7 +274,6 @@ public class MainUI extends javax.swing.JFrame {
 
         jSlider1.setMaximum(10000);
         jSlider1.setValue(10000);
-        jSlider1.setEnabled(false);
         jSlider1.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
             public void mouseDragged(java.awt.event.MouseEvent evt) {
                 jSlider1MouseDragged(evt);
@@ -406,6 +403,7 @@ public class MainUI extends javax.swing.JFrame {
         if (inputTable.isEditing()) {
             inputTable.getCellEditor().stopCellEditing();
         }
+        newSim();
         String scheduleTypeTxt = queuePicker.getSelectedItem().toString();
         if (scheduleTypeTxt.equals("Round Robin")) {
             if (prioritzed) {
@@ -440,7 +438,7 @@ public class MainUI extends javax.swing.JFrame {
         if (scheduleTypeTxt.equals("Priority")) {
             if (!prioritzed) {
                 inputTable.addColumn(new TableColumn(3));
-                inputTable.getColumnModel().moveColumn(7, 3);
+                inputTable.getColumnModel().moveColumn(8, 3);
                 prioritzed = true;
             }
             DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
@@ -477,6 +475,7 @@ public class MainUI extends javax.swing.JFrame {
 
     }//GEN-LAST:event_queuePickerActionPerformed
     private boolean addToQueue(int beg) {
+        newSim();
         DefaultTableModel model = (DefaultTableModel) inputTable.getModel();
         for (int i = beg; i < model.getRowCount(); i++) {
             Operation op;
@@ -515,6 +514,7 @@ public class MainUI extends javax.swing.JFrame {
             int wt = t.getWaiting();
             int dt = t.getResponseTime();
             int et = t.getExecutionTime();
+            int RBT = t.getTimeLeft();
 
             if (tat >= 0) {
                 model.setValueAt(tat, id - 1, 4);
@@ -532,6 +532,7 @@ public class MainUI extends javax.swing.JFrame {
                 model.setValueAt(dt - et, id - 1, 6);
                 model.setValueAt(dt, id - 1, 7);
             }
+            model.setValueAt(RBT, id - 1, 8);
 
         });
 
@@ -661,7 +662,8 @@ public class MainUI extends javax.swing.JFrame {
         untouchableRows = inputTable.getRowCount();
         inputTable.setEnabled(true);
         paused = true;
-        pauseButton.setIcon(new ImageIcon("src/processmanager/icons8-play-80.png"));
+
+        pauseButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/processmanager/icons8-play-80.png")));
         stepButton.setEnabled(true);
 
     }
@@ -669,7 +671,7 @@ public class MainUI extends javax.swing.JFrame {
     private void play() {
 
         paused = false;
-        pauseButton.setIcon(new ImageIcon("src/processmanager/icons8-pause-80.png"));
+        pauseButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/processmanager/icons8-pause-80.png")));
         stepButton.setEnabled(false);
 
     }
@@ -775,6 +777,7 @@ public class MainUI extends javax.swing.JFrame {
         if (inputTable.isEditing()) {
             inputTable.getCellEditor().stopCellEditing();
         }
+        newSim();
         if (preemtivityPicker.getSelectedItem().toString().equals("--Select preemptivity")) {
             ISButton.setEnabled(false);
             RTSButton.setEnabled(false);
@@ -836,9 +839,23 @@ public class MainUI extends javax.swing.JFrame {
     private void newSim() {
         img = null;
         ((RepaintingPanel) jPanel1).clear(jPanel1.getGraphics());
-        jSlider1.setEnabled(false);
+        
         AVG_TAT_box.setText("");
         AVG_WT_box.setText("");
+        if (prioritzed) {
+            for (int i = 0; i < inputTable.getRowCount(); i++) {
+                for (int j = 4; j < 9; j++) {
+                    inputTable.setValueAt("", i, j);
+                }
+            }
+        } else {
+            for (int i = 0; i < inputTable.getRowCount(); i++) {
+                for (int j = 3; j < 8; j++) {
+                    inputTable.setValueAt("", i, j);
+                }
+            }
+        }
+
     }
     private void clearButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_clearButtonActionPerformed
         if (inputTable.isEditing()) {
@@ -891,7 +908,7 @@ public class MainUI extends javax.swing.JFrame {
     }
 
     private void sliderEvent() throws NullPointerException {
-        if (jSlider1.isEnabled()) {
+        if (img != null) {
             shift = ((jSlider1.getValue()) * (img.getWidth() - jPanel1.getWidth())) / jSlider1.getMaximum();
             repaintSimulation();
         }
